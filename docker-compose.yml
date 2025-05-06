@@ -13,8 +13,8 @@ services:
   model-service:
     image: "ghcr.io/remla25-team20/model-service:latest"
     ports:
-      - "5000:5000"
+      - "8080:8080"
     environment:
       - NODE_ENV=production
-      - PORT=5000
+      - PORT=8080
       - HOSTNAME=0.0.0.0
