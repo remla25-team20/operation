@@ -9,3 +9,12 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
+
+  model-service:
+    image: "ghcr.io/remla25-team20/model-service:0.1.0"
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - HOSTNAME=0.0.0.0
