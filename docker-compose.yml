@@ -11,7 +11,7 @@ services:
       - HOSTNAME=0.0.0.0
 
   model-service:
-    image: "ghcr.io/remla25-team20/model-service:0.1.0"
+    image: "ghcr.io/remla25-team20/model-service:latest"
     ports:
       - "5000:5000"
     environment:
