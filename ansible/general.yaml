@@ -5,6 +5,6 @@
       ansible.posix.authorized_key:
         user: vagrant
         state: present
-        key: '{{ item }}'
+        key: "{{ lookup('file', item) }}"
       with_fileglob:
-        - "/keys/*.pub"
+        - "/vagrant/host_keys/*.pub"

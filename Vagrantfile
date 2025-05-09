@@ -17,9 +17,16 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202502.21.0"
 
-  config.vm.provision :ansible do |a|
-    a.compatibility_mode = "2.0"
-    a.playbook = "ansible/general.yaml"
+  # Sync the keys folder into each VM, so that the VM can authorize each key to use the 'vagrant' user
+  config.vm.synced_folder "./keys/", "/vagrant/host_keys"
+
+  # config.vm.provision :ansible do |a|
+  #   a.compatibility_mode = "2.0"
+  #   a.playbook = "ansible/general.yaml"
+  # end
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.compatibility_mode ="2.0"
+    ansible.playbook = "ansible/general.yaml"
   end
 
   config.vm.define "ctrl" do |ctrl|
