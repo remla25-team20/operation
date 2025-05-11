@@ -37,10 +37,17 @@
         - { name: 'net.ipv4.ip_forward', value: '1' }
         - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
         - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
-    - name: Create /etc/hosts from template
-      ansible.builtin.template:
-        src: ansible/hosts_template.j2
-        dest: /etc/hosts
-        owner: root
-        group: root
-        mode: '0644'
+    - name: Add kubernetes GPG key
+      ansible.builtin.apt_key:
+        file: Release.key
+        state: present
+    - name: Add kubernetes repository
+      ansible.builtin.apt_repository:
+        repo: >
+          deb [signed-by=/etc/apt/trusted.gpg] 
+          https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /
+        filename: kubernetes
+        state: present
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
