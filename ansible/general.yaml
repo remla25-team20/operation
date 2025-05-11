@@ -1,5 +1,9 @@
 - hosts: all
   become: yes
+
+  vars:
+    k8s_version: "1.32.4-1.1"
+
   tasks:
     - name: Set authorized keys taken from keys folder
       ansible.posix.authorized_key:
@@ -45,9 +49,17 @@
       ansible.builtin.apt_repository:
         repo: >
           deb [signed-by=/etc/apt/trusted.gpg] 
-          https://pkgs.k8s.io/core:/stable:/v1.33/deb/ /
+          https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /
         filename: kubernetes
         state: present
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: yes
+    - name: Install K8s tools
+      ansible.builtin.apt:
+        name:
+        - containerd=1.7.24-0ubuntu1~24.04.2
+        - runc=1.1.12-0ubuntu3.1
+        - kubelet={{ k8s_version }}
+        - kubeadm={{ k8s_version }}
+        - kubectl={{ k8s_version }}
