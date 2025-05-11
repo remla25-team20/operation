@@ -8,3 +8,10 @@
         key: "{{ lookup('file', item) }}"
       with_fileglob:
         - "/vagrant/host_keys/*.pub"
+    - name: Disable SWAP
+      ansible.builtin.shell: swapoff -a
+    - name: Disable SWAP in fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '^/swap.*'
+        state: absent
