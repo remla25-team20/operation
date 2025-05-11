@@ -11,7 +11,7 @@
         state: present
         key: "{{ lookup('file', item) }}"
       with_fileglob:
-        - "/vagrant/host_keys/*.pub"
+        - "host_keys/*.pub"
     - name: Disable SWAP
       ansible.builtin.shell: swapoff -a
     - name: Disable SWAP in fstab
@@ -41,6 +41,13 @@
         - { name: 'net.ipv4.ip_forward', value: '1' }
         - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
         - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+    - name: Create /etc/hosts from template
+      ansible.builtin.template:
+        src: hosts_template.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
     - name: Add kubernetes GPG key
       ansible.builtin.apt_key:
         file: Release.key
