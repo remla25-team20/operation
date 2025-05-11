@@ -1,4 +1,4 @@
 127.0.0.1 localhost
-{% for host in groups['vagrant'] %}
+{% for host in groups['all'] %}
 {{ hostvars[host]['ansible_host'] }} {{ host }}
 {% endfor %}
