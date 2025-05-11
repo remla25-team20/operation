@@ -11,7 +11,7 @@
         state: present
         key: "{{ lookup('file', item) }}"
       with_fileglob:
-        - "host_keys/*.pub"
+        - "keys/*.pub"
     - name: Disable SWAP
       ansible.builtin.shell: swapoff -a
     - name: Disable SWAP in fstab
@@ -50,7 +50,7 @@
         mode: '0644'
     - name: Add kubernetes GPG key
       ansible.builtin.apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
         state: present
     - name: Add kubernetes repository
       ansible.builtin.apt_repository:
@@ -70,3 +70,36 @@
         - kubelet={{ k8s_version }}
         - kubeadm={{ k8s_version }}
         - kubectl={{ k8s_version }}
+    - name: Create containerd folder
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        mode: '0755'
+    - name: Generate the output of default containerd config
+      ansible.builtin.command: containerd config default
+      register: containerd_config
+    - name: Write default config to /etc/containerd/config.toml
+      ansible.builtin.copy:
+        dest: /etc/containerd/config.toml
+        content: "{{ containerd_config.stdout }}"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Update specific values in containerd config.toml
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*){{ item.key }}\s*=.*$'
+        replace: '\1{{ item.key }} = {{ item.value }}'
+      loop:
+        - { key: "disable_apparmor", value: "true", section: 'plugins."io.containerd.grpc.v1.cri"'}
+        - { key: "sandbox_image", value: '"registry.k8s.io/pause:3.10"', section: 'plugins."io.containerd.grpc.v1.cri"'}
+        - { key: "SystemdCgroup", value: "true", section: 'plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options'}
+    - name: Restart containerd
+      ansible.builtin.service:
+        name: containerd
+        state: restarted
+    - name: Start kubelet service
+      ansible.builtin.service:
+        name: kubelet
+        state: started
+        enabled: true
