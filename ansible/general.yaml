@@ -15,3 +15,15 @@
         path: /etc/fstab
         regexp: '^/swap.*'
         state: absent
+    - name: Automate module load at boot
+      ansible.builtin.copy: 
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          br_netfilter
+          overlay
+    - name: Load modules
+      community.general.modprobe:
+        name: "{{ item }}"
+      loop:
+        - br_netfilter
+        - overlay
