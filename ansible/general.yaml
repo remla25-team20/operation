@@ -50,7 +50,7 @@
         mode: '0644'
     - name: Add kubernetes GPG key
       ansible.builtin.apt_key:
-        file: Release.key
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
         state: present
     - name: Add kubernetes repository
       ansible.builtin.apt_repository:
