@@ -2,23 +2,25 @@
 # vi: set ft=ruby :
 
 NUM_MACHINES = (ENV['NUM_MACHINES'] || 2).to_i
-CPU_CTRL = (ENV['CPU_CTRL'] || "1")
+CPU_CTRL = (ENV['CPU_CTRL'] || "2")
 MEMORY_CTRL = (ENV['MEMORY_CTRL'] || "4096")
 CPU_NODES = (ENV['CPU_NODES'] || "2")
 MEMORY_NODES = (ENV['MEMORY_NODES'] || "6144")
 
-inventory = "[vagrant]\n"
-inventory += "ctrl ansible_host=192.168.56.100 ansible_user=vagrant\n"
+
+inventory = "[mygroup]\n"
+
+inventory += "ctrl ansible_host=192.168.56.100 ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key\n"
 
 (1..NUM_MACHINES).each do |i|
   hostname = "node-#{i}"
   ip = "192.168.56.#{100 + i}"
 
-  inventory += "#{hostname} ansible_host=#{ip} ansible_user=vagrant\n"
+  inventory += "#{hostname} ansible_host=#{ip} ansible_user=vagrant ansible_ssh_private_key_file=.vagrant/machines/#{hostname}/virtualbox/private_key\n"
 end
 
 # Make sure to write the inventory to a file!
-File.write("inventory.cfg", inventory)
+File.write("ansible/inventory.cfg", inventory)
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -34,14 +36,12 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202502.21.0"
 
-  # config.vm.provision :ansible do |a|
-  #   a.compatibility_mode = "2.0"
-  #   a.playbook = "ansible/general.yaml"
-  # end
   config.vm.provision :ansible do |ansible|
     ansible.compatibility_mode ="2.0"
     ansible.playbook = "ansible/general.yaml"
-    # ansible.inventory_path = "inventory.cfg"
+    ansible.extra_vars = {
+      num_workers: NUM_MACHINES
+    }
   end
 
   config.vm.define "ctrl" do |ctrl|
@@ -52,10 +52,10 @@ Vagrant.configure("2") do |config|
       vb.cpus = CPU_CTRL
     end
 
-    # ctrl.vm.provision :ansible do |a|
-    #   a.compatibility_mode = "2.0"
-    #   a.playbook = "ansible/ctrl.yaml"
-    # end
+    ctrl.vm.provision :ansible do |a|
+      a.compatibility_mode = "2.0"
+      a.playbook = "ansible/ctrl.yaml"
+    end
   end
 
   (1..NUM_MACHINES).each do |i|
@@ -71,10 +71,10 @@ Vagrant.configure("2") do |config|
         vb.cpus = CPU_NODES
       end
 
-      # node.vm.provision :ansible do |a|
-      #   a.compatibility_mode = "2.0"
-      #   a.playbook = "ansible/node.yaml"
-      # end
+      node.vm.provision :ansible do |a|
+        a.compatibility_mode = "2.0"
+        a.playbook = "ansible/node.yaml"
+      end
     end
   end 
 end
