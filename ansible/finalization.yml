@@ -5,7 +5,7 @@
   tasks:
     - name: Copy metallb manifest to VM
       ansible.builtin.copy:
-        src: metallb-native.yaml
+        src: resources/metallb-native.yaml
         dest: /tmp/metallb-native.yaml
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /tmp/metallb-native.yaml
@@ -18,21 +18,39 @@
         --timeout=60s
     - name: Copy metallb resource definition manifest to VM
       ansible.builtin.copy:
-        src: metallb-resources.yaml
+        src: resources/metallb-resources.yaml
         dest: /tmp/metallb-resources.yaml
     - name: Initialize IPAddressPool and L2Advertisement
       ansible.builtin.command: kubectl apply -f /tmp/metallb-resources.yaml
     - name: Add Ingress-Nginx Helm repository
       kubernetes.core.helm_repository:
-        name: stable
+        name: ingress-nginx
         repo_url: "https://kubernetes.github.io/ingress-nginx"
     - name: Install Nginx Ingress Controller
       kubernetes.core.helm:
-        chart_ref: stable/ingress-nginx
+        chart_ref: ingress-nginx/ingress-nginx
         release_namespace: ingress-nginx
         create_namespace: true
         name: ingress-nginx
-      # ansible.builtin.command: >
-      #   helm upgrade --install ingress-nginx ingress-nginx
-      #   --repo https://kubernetes.github.io/ingress-nginx
-      #   --namespace ingress-nginx --create-namespace
+    - name: Add Kubernetes-dashboard Helm repository
+      kubernetes.core.helm_repository:
+        name: kubernetes-dashboard
+        repo_url: "https://kubernetes.github.io/dashboard/"
+    - name: Install Kubernetes Dashboard Controller
+      kubernetes.core.helm:
+        chart_ref: kubernetes-dashboard/kubernetes-dashboard
+        release_namespace: kubernetes-dashboard
+        create_namespace: true
+        name: kubernetes-dashboard
+    - name: Copy adminuser manifest for dashboard
+      ansible.builtin.copy:
+        src: resources/dashboard-adminuser.yaml
+        dest: /tmp/dashboard-adminuser.yaml
+    - name: Apply adminuser manifest
+      ansible.builtin.command: kubectl apply -f /tmp/dashboard-adminuser.yaml
+    - name: Copy ingress manifest for dashboard
+      ansible.builtin.copy:
+        src: resources/dashboard-ingress.yaml
+        dest: /tmp/dashboard-ingress.yaml
+    - name: Apply Dashboard Ingress manifest
+      ansible.builtin.command: kubectl apply -f /tmp/dashboard-ingress.yaml
