@@ -2,6 +2,20 @@
 # vi: set ft=ruby :
 
 NUM_MACHINES = (ENV['NUM_MACHINES'] || 2).to_i
+CPU_CTRL = (ENV['CPU_CTRL'] || "1")
+MEMORY_CTRL = (ENV['MEMORY_CTRL'] || "4096")
+CPU_NODES = (ENV['CPU_NODES'] || "2")
+MEMORY_NODES = (ENV['MEMORY_NODES'] || "6144")
+
+inventory = "[vagrant]\n"
+inventory += "ctrl ansible_host=192.168.56.100 ansible_user=vagrant ansible_private_key_file=.vagrant/machines/ctrl/virtualbox/private_key\n"
+
+(1..NUM_MACHINES).each do |i|
+  hostname = "node-#{i}"
+  ip = "192.168.56.#{100 + i}"
+
+  inventory += "#{hostname} ansible_host=#{ip} ansible_user=vagrant ansible_private_key_file=.vagrant/machines/#{hostname}/virtualbox/private_key\n"
+end
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -33,8 +47,8 @@ Vagrant.configure("2") do |config|
     ctrl.vm.network "private_network", ip: "192.168.56.100"
 
     ctrl.vm.provider "virtualbox" do |vb|
-      vb.memory = "4096"
-      vb.cpus = "1"
+      vb.memory = MEMORY_CTRL
+      vb.cpus = CPU_CTRL
     end
 
     # ctrl.vm.provision :ansible do |a|
@@ -44,13 +58,16 @@ Vagrant.configure("2") do |config|
   end
 
   (1..NUM_MACHINES).each do |i|
-    config.vm.define "node-#{i}" do |node|
-      node.vm.hostname = "node-#{i}"
-      node.vm.network "private_network", ip: "192.168.56.#{100 + i}"
+    hostname = "node-#{i}"
+    ip = "192.168.56.#{100 + i}"
+
+    config.vm.define hostname do |node|
+      node.vm.hostname = hostname
+      node.vm.network "private_network", ip: ip
 
       node.vm.provider "virtualbox" do |vb|
-        vb.memory = "6144"
-        vb.cpus = "2"
+        vb.memory = MEMORY_NODES
+        vb.cpus = CPU_NODES
       end
 
       # node.vm.provision :ansible do |a|
@@ -60,3 +77,6 @@ Vagrant.configure("2") do |config|
     end
   end 
 end
+
+# Make sure to write the inventory to a file!
+File.write("inventory.cfg", inventory)
