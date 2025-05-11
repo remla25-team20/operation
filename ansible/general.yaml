@@ -1,0 +1,105 @@
+- hosts: all
+  become: yes
+
+  vars:
+    k8s_version: "1.32.4-1.1"
+
+  tasks:
+    - name: Set authorized keys taken from keys folder
+      ansible.posix.authorized_key:
+        user: vagrant
+        state: present
+        key: "{{ lookup('file', item) }}"
+      with_fileglob:
+        - "keys/*.pub"
+    - name: Disable SWAP
+      ansible.builtin.shell: swapoff -a
+    - name: Disable SWAP in fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '^/swap.*'
+        state: absent
+    - name: Automate module load at boot
+      ansible.builtin.copy: 
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          br_netfilter
+          overlay
+    - name: Load modules
+      community.general.modprobe:
+        name: "{{ item }}"
+      loop:
+        - br_netfilter
+        - overlay
+    - name: Enable IPv4 and IPv6 forwarding
+      ansible.builtin.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_set: yes
+        reload: yes
+      with_items:
+        - { name: 'net.ipv4.ip_forward', value: '1' }
+        - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+        - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+    - name: Create /etc/hosts from template
+      ansible.builtin.template:
+        src: hosts_template.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Add kubernetes GPG key
+      ansible.builtin.apt_key:
+        url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+        state: present
+    - name: Add kubernetes repository
+      ansible.builtin.apt_repository:
+        repo: >
+          deb [signed-by=/etc/apt/trusted.gpg] 
+          https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /
+        filename: kubernetes
+        state: present
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Install K8s tools
+      ansible.builtin.apt:
+        name:
+        - containerd=1.7.24-0ubuntu1~24.04.2
+        - runc=1.1.12-0ubuntu3.1
+        - kubelet={{ k8s_version }}
+        - kubeadm={{ k8s_version }}
+        - kubectl={{ k8s_version }}
+    - name: Create containerd folder
+      ansible.builtin.file:
+        path: /etc/containerd
+        state: directory
+        mode: '0755'
+    - name: Generate the output of default containerd config
+      ansible.builtin.command: containerd config default
+      register: containerd_config
+    - name: Write default config to /etc/containerd/config.toml
+      ansible.builtin.copy:
+        dest: /etc/containerd/config.toml
+        content: "{{ containerd_config.stdout }}"
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Update specific values in containerd config.toml
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*){{ item.key }}\s*=.*$'
+        replace: '\1{{ item.key }} = {{ item.value }}'
+      loop:
+        - { key: "disable_apparmor", value: "true", section: 'plugins."io.containerd.grpc.v1.cri"'}
+        - { key: "sandbox_image", value: '"registry.k8s.io/pause:3.10"', section: 'plugins."io.containerd.grpc.v1.cri"'}
+        - { key: "SystemdCgroup", value: "true", section: 'plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options'}
+    - name: Restart containerd
+      ansible.builtin.service:
+        name: containerd
+        state: restarted
+    - name: Start kubelet service
+      ansible.builtin.service:
+        name: kubelet
+        state: started
+        enabled: true

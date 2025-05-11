@@ -1,0 +1,62 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Resolve the existence of kube config file
+      ansible.builtin.stat:
+        path: /etc/kubernetes/admin.conf
+      register: conf
+    - name: Initialize Kubernetes cluster
+      ansible.builtin.command: >
+        kubeadm init
+        --apiserver-advertise-address=192.168.56.100
+        --node-name ctrl
+        --pod-network-cidr=10.244.0.0/16
+      when: not conf.stat.exists
+    - name: Make sure .kube folder exists
+      ansible.builtin.file:
+        path: /home/vagrant/.kube
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: '0755'
+    - name: Copy kubernetes admin config to .kube for kubectl
+      ansible.builtin.copy:
+        dest: /home/vagrant/.kube/config
+        src: /etc/kubernetes/admin.conf
+        remote_src: true
+        owner: vagrant
+        group: vagrant
+        mode: '0644'
+    - name: Fetch kubeconfig file from ctrl VM
+      ansible.builtin.fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: ../kubeconfig
+        flat: yes
+    - name: Copy flannel manifest to VM
+      ansible.builtin.copy:
+        src: resources/kube-flannel.yml
+        dest: /tmp/kube-flannel.yml
+    - name: Apply Flannel manifest
+      ansible.builtin.command: kubectl apply -f /tmp/kube-flannel.yml
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+    - name: Add Helm ASC key
+      ansible.builtin.apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+        state: present
+    - name: Add kubernetes repository
+      ansible.builtin.apt_repository:
+        repo: >
+          deb [signed-by=/etc/apt/trusted.gpg] 
+          https://baltocdn.com/helm/stable/debian/ all main /
+        filename: helm
+        state: present
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: Install Helm
+      ansible.builtin.apt:
+        name:
+        - helm
+    # - name: Install Helm diff package
+    #   ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
