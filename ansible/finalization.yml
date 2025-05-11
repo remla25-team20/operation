@@ -1,0 +1,38 @@
+- hosts: all
+  become: yes
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  tasks:
+    - name: Copy metallb manifest to VM
+      ansible.builtin.copy:
+        src: metallb-native.yaml
+        dest: /tmp/metallb-native.yaml
+    - name: Apply Flannel manifest
+      ansible.builtin.command: kubectl apply -f /tmp/metallb-native.yaml
+    - name: Wait until metallb is fully initialized
+      ansible.builtin.command: >
+        kubectl wait
+        -n metallb-system
+        -l app=metallb,component=controller --for=condition=ready
+        pod
+        --timeout=60s
+    - name: Copy metallb resource definition manifest to VM
+      ansible.builtin.copy:
+        src: metallb-resources.yaml
+        dest: /tmp/metallb-resources.yaml
+    - name: Initialize IPAddressPool and L2Advertisement
+      ansible.builtin.command: kubectl apply -f /tmp/metallb-resources.yaml
+    - name: Add Ingress-Nginx Helm repository
+      kubernetes.core.helm_repository:
+        name: stable
+        repo_url: "https://kubernetes.github.io/ingress-nginx"
+    - name: Install Nginx Ingress Controller
+      kubernetes.core.helm:
+        chart_ref: stable/ingress-nginx
+        release_namespace: ingress-nginx
+        create_namespace: true
+        name: ingress-nginx
+      # ansible.builtin.command: >
+      #   helm upgrade --install ingress-nginx ingress-nginx
+      #   --repo https://kubernetes.github.io/ingress-nginx
+      #   --namespace ingress-nginx --create-namespace
