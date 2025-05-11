@@ -58,5 +58,5 @@
       ansible.builtin.apt:
         name:
         - helm
-    - name: Install Helm diff package
-      ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
+    # - name: Install Helm diff package
+    #   ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
