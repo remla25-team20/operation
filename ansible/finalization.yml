@@ -54,3 +54,26 @@
         dest: /tmp/dashboard-ingress.yaml
     - name: Apply Dashboard Ingress manifest
       ansible.builtin.command: kubectl apply -f /tmp/dashboard-ingress.yaml
+#   Step 23: Install Istio
+    - name: Detect machine architecture
+      ansible.builtin.set_fact:
+        istio_arch: "{{ 'arm64' if ansible_architecture == 'aarch64' else 'amd64' }}"
+    - name: Set Istio version
+      ansible.builtin.set_fact:
+        istio_version: "1.25.2"
+    - name: Download Istio archive
+      ansible.builtin.get_url:
+        url: "https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux-{{ istio_arch }}.tar.gz"
+        dest: "/tmp/istio.tar.gz"
+        mode: '0644'
+    - name: Extract Istio archive
+      ansible.builtin.unarchive:
+        src: "/tmp/istio.tar.gz"
+        dest: "/opt"
+        remote_src: yes
+    - name: Move istioctl to /usr/local/bin
+      ansible.builtin.copy:
+        src: "/opt/istio-{{ istio_version }}/bin/istioctl"
+        dest: "/usr/local/bin/istioctl"
+        remote_src: yes
+        mode: '0755'
