@@ -77,3 +77,14 @@
         dest: "/usr/local/bin/istioctl"
         remote_src: yes
         mode: '0755'
+    - name: Copy IstioOperator config to the VM
+      ansible.builtin.copy:
+        src: resources/istio-gateway.yml
+        dest: /tmp/istio-gateway.yml
+        remote_src: no
+        mode: '0644'
+    - name: Install Istio with custom config
+      ansible.builtin.command: >
+        istioctl install -y -f /tmp/istio-gateway.yml
+      args:
+        chdir: /home/vagrant
