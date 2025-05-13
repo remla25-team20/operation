@@ -29,7 +29,6 @@ Run the system locally using Docker Compose.
    docker-compose up
    ```
    - Access the application at: `http://localhost:3000`
-   - The `model-service` runs internally on port `5000` (not exposed).
 
 ### Assignment 2 – Kubernetes Cluster (Production)
 
