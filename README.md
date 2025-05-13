@@ -86,8 +86,7 @@ This organization is structured into multiple public repositories:
 
 ### Assignment 2 – Provisioning a Kubernetes Cluster
 
-#### Provisioning Review
-
+#### Targeted Rating
 | Category                     | Rating  | Notes                                                                 |
 |------------------------------|---------|----------------------------------------------------------------------|
 | Setting up (Virtual) Infrastructure | **Excellent** | Fully automated VM setup with configurable worker nodes and inventory. |
