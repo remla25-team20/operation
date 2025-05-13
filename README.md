@@ -13,6 +13,10 @@ This system is structured according to the REMLA reference architecture and cons
 
 Both services are containerized and deployed via `docker-compose` using pre-built images hosted on GitHub Container Registry (GHCR).
 
+## 🧭 Istio Service Mesh
+
+This project includes a lightweight installation of Istio 1.25.2 as a service mesh for Kubernetes. It was provisioned automatically via Ansible, using istioctl and a custom IstioOperator configuration to expose the Istio Ingress Gateway on a fixed IP (192.168.56.91) through MetalLB.
+
 ---
 
 ## 🐳 Running the Application Locally
