@@ -8,8 +8,12 @@ Approved PR: https://github.com/remla25-team20/model-service/pull/2 (Related to 
 Approved PR: https://github.com/remla25-team20/lib-ml/pull/3 (Related to A1)
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/lib-ml/pull/3
+Created PR: https://github.com/remla25-team20/model-service/pull/1
+Created PR: https://github.com/remla25-team20/model-service/pull/2
+Created PR: https://github.com/remla25-team20/lib-ml/pull/6
+Created PR: https://github.com/remla25-team20/lib-ml/pull/5
+Approved PR: https://github.com/remla25-team20/lib-ml/pull/2
 
 -- Nathan --
 Created PR:
@@ -31,8 +35,8 @@ Approved PR: https://github.com/remla25-team20/model-training/pull/2 (Related to
 Approved PR: https://github.com/remla25-team20/lib-ml/pull/6 (Related to A1)
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/4 (A2)
+Approved PR: https://github.com/remla25-team20/operation/pull/3 (A2)
 
 -- Nathan --
 Created PR:
