@@ -62,6 +62,7 @@ Approved PR:
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/lib-ml/pull/7 (Related to A1)
+Created PR: https://github.com/remla25-team20/model-training/pull/4 (Related to A1)
 Approved PR: https://github.com/remla25-team20/lib-ml/pull/7 (Related to A1)
 
 -- Yiming --
