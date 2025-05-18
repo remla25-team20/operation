@@ -56,6 +56,7 @@ Vagrant.configure("2") do |config|
       a.compatibility_mode = "2.0"
       a.playbook = "ansible/ctrl.yaml"
     end
+    ctrl.vm.synced_folder ".", "/vagrant"
   end
 
   (1..NUM_MACHINES).each do |i|
@@ -75,6 +76,7 @@ Vagrant.configure("2") do |config|
         a.compatibility_mode = "2.0"
         a.playbook = "ansible/node.yaml"
       end
+      node.vm.synced_folder ".", "/vagrant"
     end
   end 
 end
