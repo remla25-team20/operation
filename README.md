@@ -53,14 +53,47 @@ Provision a Kubernetes cluster with Istio service mesh to deploy the system in a
 
 **Operation Release**: [A2 Release](https://github.com/remla25-team20/operation/releases/tag/a2)
 
+### Assignment 3 - Operate and Monitor Kubernetes
+
+Deploying our own application to kubernetes and monitoring
+
+1. **Prerequisites**
+
+   - Have a kubernetes cluster running as in Assignment 2 _or_ have a local minikube cluster running
+
+2. **Install application via Helm chart**
+
+   ```bash
+   # This command requires you to run from the `operation` repository
+   # KUBECONFIG is only necessary if you haven\'t added it to your global config
+   KUBECONFIG=kubeconfig helm install app ./app-chart/
+   ```
+
+3. **Application connect**
+   - The application will be available via the ingress-nginx-controller on [http://app.local](http://app.local) when you have added the following to your `/etc/hosts`.
+   ```bash
+   192.168.56.90  app.local
+   ```
+   - (OPTIONAL) need a flush of DNS cache as in assignment 2:
+   ```bash
+   sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder # MacOS
+   sudo systemd-resolve --flush-caches # Linux/systemd
+   ipconfig /flushdns # Windows
+   ```
+   - (POSSIBLE PROBLEM) The ingress-nginx-controller should have external IP 192.168.56.90 by default, but if it is not working please check on which IP the ingress-nginx-controller is exposed with the following command and edit your `/etc/hosts` accordingly.
+   ```bash
+   # Again KUBECONFIG only needed if you haven\'t added it to your global config
+   KUBECONFIG=kubeconfig kubectl get svc -n ingress-nginx
+   ```
+
 ## 🧭 Repository Overview
 
-| Component            | Description                                             |
-|---------------------|---------------------------------------------------------|
-| `docker-compose.yml` | Defines services for local Docker Compose deployment.   |
-| `Vagrantfile`        | Configures Kubernetes cluster VMs for Assignment 2.     |
-| `ansible/`           | Contains Ansible playbooks for cluster provisioning.    |
-| `README.md`          | Instructions to operate the system (this file).         |
+| Component            | Description                                           |
+| -------------------- | ----------------------------------------------------- |
+| `docker-compose.yml` | Defines services for local Docker Compose deployment. |
+| `Vagrantfile`        | Configures Kubernetes cluster VMs for Assignment 2.   |
+| `ansible/`           | Contains Ansible playbooks for cluster provisioning.  |
+| `README.md`          | Instructions to operate the system (this file).       |
 
 ## 🔗 Project Repositories
 
@@ -87,11 +120,12 @@ This organization is structured into multiple public repositories:
 ### Assignment 2 – Provisioning a Kubernetes Cluster
 
 #### Targeted Rating
-| Category                     | Rating  | Notes                                                                 |
-|------------------------------|---------|----------------------------------------------------------------------|
+
+| Category                            | Rating        | Notes                                                                  |
+| ----------------------------------- | ------------- | ---------------------------------------------------------------------- |
 | Setting up (Virtual) Infrastructure | **Excellent** | Fully automated VM setup with configurable worker nodes and inventory. |
-| Setting up Software Environment    | **Good**      | Errors in first run of `finalization.yml`; works on second run.       |
-| Setting up Kubernetes             | **Good**      | Missing HTTPS Ingress Controller with self-signed certificates.       |
+| Setting up Software Environment     | **Good**      | Errors in first run of `finalization.yml`; works on second run.        |
+| Setting up Kubernetes               | **Good**      | Missing HTTPS Ingress Controller with self-signed certificates.        |
 
 - ✅ **Automated virtual infrastructure**: Set up configurable VMs (`ctrl`, `node-<N>`) with Vagrant and Ansible inventory.
 - ✅ **Deployed Kubernetes cluster**: Initialized cluster with `kubeadm`, `kubectl`, Flannel, and Helm.
