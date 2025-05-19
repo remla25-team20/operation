@@ -1,3 +1,5 @@
 .env
 .vagrant
 kubeconfig
+shared/*
+!shared/.keep

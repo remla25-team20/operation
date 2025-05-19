@@ -35,6 +35,7 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.box_version = "202502.21.0"
+  config.vm.synced_folder "shared/", "/mnt/shared"
 
   config.vm.provision :ansible do |ansible|
     ansible.compatibility_mode ="2.0"
