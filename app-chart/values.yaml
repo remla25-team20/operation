@@ -124,5 +124,8 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: latest
+  version: 0.1.1
   port: 8080
+
+app:
+  version: 0.1.5

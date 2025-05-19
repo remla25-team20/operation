@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: model-service
-        image: ghcr.io/remla25-team20/model-service:{{ .Values.modelService.version }}
+        image: ghcr.io/remla25-team20/model-service:{{  .Values.modelService.version  }}
         ports:
         - containerPort: {{ .Values.modelService.port }}
 ---
@@ -39,8 +39,7 @@ spec:
     spec:
       containers:
       - name: app
-        # TODO: workflow-released version does not work on arm/m-chip
-        image: "ghcr.io/remla25-team20/app:latest"
+        image: "ghcr.io/remla25-team20/app:{{ .Values.app.version  }}"
         ports:
         - containerPort: 3000
         env:
