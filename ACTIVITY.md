@@ -27,6 +27,10 @@ Approved PR:
 Created PR:
 Approved PR:
 
+-- Dirk --
+Created PR:
+Approved PR:
+
 # Week 2
 
 -- Jeroen --
@@ -47,6 +51,10 @@ Created PR:
 Approved PR:
 
 -- Nathan --
+Created PR:
+Approved PR:
+
+-- Dirk --
 Created PR:
 Approved PR:
 
@@ -73,6 +81,10 @@ Approved PR:
 Created PR:
 Approved PR:
 
+-- Dirk --
+Created PR:
+Approved PR:
+
 # Week 4
 
 -- Jeroen --
@@ -92,6 +104,10 @@ Created PR:
 Approved PR:
 
 -- Nathan --
+Created PR:
+Approved PR:
+
+-- Dirk --
 Created PR:
 Approved PR:
 
@@ -117,6 +133,10 @@ Approved PR:
 Created PR:
 Approved PR:
 
+-- Dirk --
+Created PR:
+Approved PR:
+
 # Week 6
 
 -- Jeroen --
@@ -136,6 +156,10 @@ Created PR:
 Approved PR:
 
 -- Nathan --
+Created PR:
+Approved PR:
+
+-- Dirk --
 Created PR:
 Approved PR:
 
@@ -161,6 +185,10 @@ Approved PR:
 Created PR:
 Approved PR:
 
+-- Dirk --
+Created PR:
+Approved PR:
+
 # Week 8
 
 -- Jeroen --
@@ -180,6 +208,10 @@ Created PR:
 Approved PR:
 
 -- Nathan --
+Created PR:
+Approved PR:
+
+-- Dirk --
 Created PR:
 Approved PR:
 
@@ -205,6 +237,10 @@ Approved PR:
 Created PR:
 Approved PR:
 
+-- Dirk --
+Created PR:
+Approved PR:
+
 # Week 10
 
 -- Jeroen --
@@ -224,5 +260,9 @@ Created PR:
 Approved PR:
 
 -- Nathan --
+Created PR:
+Approved PR:
+
+-- Dirk --
 Created PR:
 Approved PR:
