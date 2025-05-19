@@ -53,8 +53,13 @@ Approved PR: https://github.com/remla25-team20/operation/pull/7
 # Week 3
 
 -- Jeroen --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/app/pull/4 (Related to A1)
+Created PR: https://github.com/remla25-team20/operation/pull/14 (Related to A3)
+Created PR: https://github.com/remla25-team20/operation/pull/15 (Related to A2)
+Created PR: https://github.com/remla25-team20/model-service/pull/5 (Related to A1)
+Approved PR: https://github.com/remla25-team20/model-training/pull/4
+Approved PR: https://github.com/remla25-team20/app/pull/3 (Related to A3)
+Approved PR: https://github.com/remla25-team20/model-service/pull/4 (Related to A3)
 
 -- Adrian --
 Created PR:
