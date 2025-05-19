@@ -57,8 +57,10 @@ Created PR:
 Approved PR:
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/13 (A3)
+Created PR: https://github.com/remla25-team20/app/pull/2 (A1)
+Created PR: https://github.com/remla25-team20/operation/pull/10 (A1)
+Approved PR: https://github.com/remla25-team20/operation/pull/16 (A3)
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/lib-ml/pull/7 (Related to A1)
