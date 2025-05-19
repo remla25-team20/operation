@@ -1,0 +1,17 @@
+# File: operation/app-chart/templates/model-service-monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: model-service-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: model-service
+    release: prometheus  # Match Prometheus CRD label for discovery
+spec:
+  selector:
+    matchLabels:
+      app: model-service  # Match the Service labels in deployment.yml
+  endpoints:
+  - port: http  # Match the Service port name (to be added in deployment.yml)
+    path: /metrics
+    interval: 15s
