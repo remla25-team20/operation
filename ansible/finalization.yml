@@ -52,6 +52,13 @@
       ansible.builtin.copy:
         src: resources/dashboard-ingress.yaml
         dest: /tmp/dashboard-ingress.yaml
+    - name: Wait until ingress-nginx is fully initialized
+      ansible.builtin.command: >
+        kubectl wait
+        -n ingress-nginx
+        -l app.kubernetes.io/name=ingress-nginx,app.kubernetes.io/component=controller --for=condition=ready
+        pod
+        --timeout=60s
     - name: Apply Dashboard Ingress manifest
       ansible.builtin.command: kubectl apply -f /tmp/dashboard-ingress.yaml
 #   Step 23: Install Istio
