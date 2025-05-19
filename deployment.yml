@@ -6,7 +6,7 @@ metadata:
   labels:
     app: model-service
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: model-service
@@ -20,10 +20,6 @@ spec:
         image: "ghcr.io/remla25-team20/model-service:latest"
         ports:
         - containerPort: 8080
-        # environment:
-        #   - NODE_ENV=production
-        #   - PORT=8080
-        #   - HOSTNAME=0.0.0.0
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,7 +28,7 @@ metadata:
   labels:
     app: app
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: app
@@ -44,7 +40,7 @@ spec:
       containers:
       - name: app
         # TODO: workflow-released version does not work on arm/m-chip
-        image: "ghcr.io/remla25-team20/app:0.1.4-arm"
+        image: "ghcr.io/remla25-team20/app:latest"
         ports:
         - containerPort: 3000
         env:
@@ -86,13 +82,6 @@ spec:
   rules:
   - http:
       paths:
-      # - path: /model-service
-      #   pathType: Prefix
-      #   backend:
-      #     service:
-      #       name: model-service
-      #       port:
-      #         number: 8080
       - path: /
         pathType: Prefix
         backend:
