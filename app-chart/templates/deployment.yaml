@@ -60,8 +60,9 @@ spec:
   selector:
     app: model-service
   ports:
-    - port: 8080
-      targetPort: 8080
+    - name: http  # For ServiceMonitor
+      port: {{ .Values.modelService.port }}  # Use value from values.yaml
+      targetPort: {{ .Values.modelService.port }}  # Keep consistent
 ---
 apiVersion: v1
 kind: Service
