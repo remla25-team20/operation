@@ -131,3 +131,23 @@ This organization is structured into multiple public repositories:
 - ✅ **Deployed Kubernetes cluster**: Initialized cluster with `kubeadm`, `kubectl`, Flannel, and Helm.
 - ✅ **Installed production components**: Configured MetalLB, Nginx Ingress, and Kubernetes Dashboard.
 - ✅ **Enabled Istio service mesh**: Deployed Istio 1.25.2 with Ingress Gateway on `192.168.56.91`.
+
+### Assignment 3 – Operate and Monitor Kubernetes
+
+#### Targeted Rating
+
+| Category                 | Rating        | Notes                                                                 |
+|--------------------------|---------------|-----------------------------------------------------------------------|
+| Kubernetes Usage         | **Good**      | Application deployed with Helm and exposed via Ingress. Model service address configurable via values.yaml. |
+| Helm Installation        | **Good**      | Helm chart supports customization of service names and ports.        |
+| App Monitoring           | **Sufficient**| Three custom app-specific metrics (including Gauge and Counter) collected by Prometheus. |
+| Grafana Dashboard        | **Sufficient**| Custom dashboard defined and working, displaying key metrics via manual import. |
+
+- ✅ **Converted app deployment to Helm chart**: Parameterized model service port, service names, and image versions.
+- ✅ **Deployed application via Helm**: Application and model-service deployed using Helm on self-provisioned Kubernetes cluster.
+- ✅ **Ingress exposure via Nginx**: App reachable at `http://app.local` through `ingress-nginx-controller` with MetalLB IP.
+- ✅ **Prometheus integration with ServiceMonitor**: Automatically scrapes `/metrics` endpoint from model-service.
+- ✅ **Custom application metrics**: Three metrics (Gauge, Counter, Histogram) defined in the app and collected.
+- ✅ **Grafana dashboard setup**: Manually imported JSON dashboard visualizes metrics using counters, gauges, and histogram functions.
+- 🛠 **Working on alerting**: Preparing PrometheusRule and AlertManager integration to support automatic notifications.
+

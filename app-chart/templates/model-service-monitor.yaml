@@ -1,4 +1,4 @@
-# File: operation/app-chart/templates/model-service-monitor.yaml
+# operation/app-chart/templates/model-service-monitor.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:

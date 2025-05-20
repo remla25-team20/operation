@@ -72,6 +72,10 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+ingressClass:
+  enabled: false
+  name: nginx
+  isDefault: true
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -129,3 +133,7 @@ modelService:
 
 app:
   version: 0.1.5
+
+serviceMonitor:
+  enabled: true          
+  release: monitoring

@@ -54,6 +54,22 @@
         dest: /tmp/dashboard-ingress.yaml
     - name: Apply Dashboard Ingress manifest
       ansible.builtin.command: kubectl apply -f /tmp/dashboard-ingress.yaml
+# Needed for monitoring
+    - name: Add Prometheus Community repo
+      kubernetes.core.helm_repository:
+        name: prometheus-community
+        repo_url: https://prometheus-community.github.io/helm-charts
+    - name: Install kube-prometheus-stack (Prometheus-Operator + Grafana)
+      kubernetes.core.helm:
+        name: monitoring                      
+        chart_ref: prometheus-community/kube-prometheus-stack
+        namespace: monitoring                  # Seperate Namespace
+        create_namespace: true
+        update_repo_cache: true
+        values:                                
+          prometheus:
+            prometheusSpec:
+              serviceMonitorSelectorNilUsesHelmValues: false
 #   Step 23: Install Istio
     - name: Detect machine architecture
       ansible.builtin.set_fact:
@@ -88,3 +104,4 @@
         istioctl install -y -f /tmp/istio-gateway.yml
       args:
         chdir: /home/vagrant
+
