@@ -37,17 +37,22 @@ Provision a Kubernetes cluster with Istio service mesh to deploy the system in a
 1. **Prerequisites**:
    - Vagrant and VirtualBox installed.
    - Ansible installed for provisioning.
-2. **Provision virtual machines**:
+2. **Place your public key in keys folder**
+   ```bash
+   # Command is ran from the 'operation' repository
+   cp ~/.ssh/id_ed25519.pub ./ansible/keys/<your_name>.pub
+   ```
+3. **Provision virtual machines**:
    ```bash
    vagrant up
    ```
    - Creates controller (`ctrl`, 1 CPU, 4GB) and worker nodes (`node-<N>`, 2 CPUs, 6GB) using `bento/ubuntu-24.04`.
-3. **Run final provisioning**:
+4. **Run final provisioning**:
    ```bash
    ansible-playbook -u vagrant -i 192.168.56.100, ansible/finalization.yml
    ```
    - Installs MetalLB, Nginx Ingress, Kubernetes Dashboard, and Istio 1.25.2.
-4. **Istio Service Mesh**:
+5. **Istio Service Mesh**:
    - Lightweight Istio 1.25.2 installed via Ansible using `istioctl`.
    - Istio Ingress Gateway exposed on `192.168.56.91` via MetalLB.
 
