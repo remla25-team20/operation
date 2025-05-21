@@ -20,8 +20,9 @@ Created PR: https://github.com/remla25-team20/lib-ml/pull/2 (Related to A1)
 Approved PR: https://github.com/remla25-team20/model-training/pull/1 (Related to A1)
 
 -- Yiming --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/1
+Reviewed PR: https://github.com/remla25-team20/lib-version/pull/1
+Reviewed PR: https://github.com/remla25-team20/model-service/pull/2
 
 -- Dirk --
 Created PR: https://github.com/remla25-team20/model-training/pull/1 (Related to A1)
@@ -43,8 +44,8 @@ Created PR:
 Approved PR:
 
 -- Yiming --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/7
+Approved PR: https://github.com/remla25-team20/model-service/pull/3
 
 -- Dirk --
 Created PR: https://github.com/remla25-team20/model-service/pull/3 (Related to A1)
@@ -66,8 +67,13 @@ Created PR: https://github.com/remla25-team20/model-training/pull/4 (Related to 
 Approved PR: https://github.com/remla25-team20/lib-ml/pull/7 (Related to A1)
 
 -- Yiming --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/model-service/pull/4
+Created PR: https://github.com/remla25-team20/app/pull/3
+Created PR: https://github.com/remla25-team20/model-service/pull/6
+Created PR: https://github.com/remla25-team20/model-service/pull/7
+Created PR: https://github.com/remla25-team20/operation/pull/21
+Approved PR: https://github.com/remla25-team20/model-service/pull/6 (It changes version number and is very small so I approve it myself)
+Approved PR: https://github.com/remla25-team20/app/pull/2
 
 -- Dirk --
 Created PR: https://github.com/remla25-team20/operation/pull/16 (Related to A3)
