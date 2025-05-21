@@ -88,7 +88,7 @@ spec:
   - host: app.local
     http:
       paths:
-      # 1️⃣ front-end
+      # front-end
       - path: /
         pathType: Prefix
         backend:
@@ -96,7 +96,7 @@ spec:
             name: app-service
             port:
               number: 3000
-      # 2️⃣ back-end
+      # back-end
       - path: /model-service(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
