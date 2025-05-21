@@ -59,6 +59,10 @@
       kubernetes.core.helm_repository:
         name: prometheus-community
         repo_url: https://prometheus-community.github.io/helm-charts
+    - name: Copy monitoring values.yaml to remote machine
+      ansible.builtin.copy:
+        src: monitoring-values.yaml  # Local file in ansible/ folder
+        dest: /tmp/monitoring-values.yaml
     - name: Install kube-prometheus-stack (Prometheus-Operator + Grafana)
       kubernetes.core.helm:
         name: monitoring                      
@@ -66,10 +70,8 @@
         namespace: monitoring                  # Seperate Namespace
         create_namespace: true
         update_repo_cache: true
-        values:                                
-          prometheus:
-            prometheusSpec:
-              serviceMonitorSelectorNilUsesHelmValues: false
+        values_files:
+          - /tmp/monitoring-values.yaml
 #   Step 23: Install Istio
     - name: Detect machine architecture
       ansible.builtin.set_fact:

@@ -88,12 +88,15 @@ Deploying our own application to kubernetes and monitoring
    KUBECONFIG=kubeconfig kubectl get svc -n ingress-nginx
    ```
 
-4. **Install Monitoring via Helm chart**
-   - **Local cluster only** – add these lines to `/etc/hosts` alongside `app.local`. So, your browser can also resolve [grafana.app.local](grafana.app.local) and [prometheus.app.local](prometheus.app.local):
-   ```bash
-   helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
-   --namespace monitoring --create-namespace \
-   -f monitoring/values.yaml
+4. **Install Monitoring via Ansible**
+
+Monitoring (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
+
+Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
+
+```bash
+192.168.56.90 grafana.app.local prometheus.app.local
+
    ```
 5. **View & configure monitoring dashboards**
    Once the `monitoring` Helm release is **`STATUS: deployed`** it can take 15-30 s before Prometheus finishes its first scrape of *model-service*.  
