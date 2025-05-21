@@ -58,7 +58,7 @@ service:
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
-  enabled: false
+  enabled: true
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -128,11 +128,11 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: 0.1.1
+  version: 0.1.3 # this version has the most recent metrics
   port: 8080
 
 app:
-  version: 0.1.5
+  version: 0.2.0
 
 serviceMonitor:
   enabled: true          

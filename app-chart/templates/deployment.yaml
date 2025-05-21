@@ -56,7 +56,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{  .Values.modelService.name  }}
-spec:
+  labels:
+    app: model-service  # so that the ServiceMonitor can find it
+    app.kubernetes.io/managed-by: Helm # this was the default one
+spec: 
   selector:
     app: model-service
   ports:
@@ -85,6 +88,7 @@ spec:
   - host: app.local
     http:
       paths:
+      # 1️⃣ front-end
       - path: /
         pathType: Prefix
         backend:
@@ -92,3 +96,12 @@ spec:
             name: app-service
             port:
               number: 3000
+      # 2️⃣ back-end
+      - path: /model-service(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: model-service
+            port:
+              number: 8080
+
