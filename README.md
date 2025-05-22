@@ -69,6 +69,8 @@ Deploying our own application to kubernetes and monitoring
    KUBECONFIG=kubeconfig helm install app ./app-chart/
    ```
 
+   
+
 3. **Application connect**
    - The application will be available via the ingress-nginx-controller on [http://app.local](http://app.local) when you have added the following to your `/etc/hosts`.
    ```bash
@@ -85,6 +87,48 @@ Deploying our own application to kubernetes and monitoring
    # Again KUBECONFIG only needed if you haven\'t added it to your global config
    KUBECONFIG=kubeconfig kubectl get svc -n ingress-nginx
    ```
+
+4. **Install Monitoring via Ansible**
+
+Monitoring (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
+
+Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
+
+```bash
+192.168.56.90 grafana.app.local prometheus.app.local
+
+   ```
+5. **View & configure monitoring dashboards**
+   Once the `monitoring` Helm release is **`STATUS: deployed`** it can take 15-30 s before Prometheus finishes its first scrape of *model-service*.  
+   During that time Grafana panels may still read “No data” – just refresh once the target turns **UP** (Prometheus → *Status ▸ Targets*).
+   **Log in to Grafana**
+   | URL | Default user | Default password |
+   |-----|--------------|------------------|
+   | <http://grafana.app.local> | `admin` | `prom-operator` |
+
+   **Add the dashboard**
+   ```bash
+   # Grafana UI → Dashboards → Import → Upload
+   file: grafana/model-dashboard.json  (in this repo)
+   ```
+   The dashboard shows:
+
+   | Panel        | Metric                                                                                                   | Prometheus type |
+   |--------------|-----------------------------------------------------------------------------------------------------------|-----------------|
+   | CPU Usage    | `model_cpu_percent`                                                                                       | Gauge           |
+   | Memory RSS   | `model_memory_rss_bytes`                                                                                  | Gauge           |
+   | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
+   | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
+   | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
+
+
+### Quick links
+
+| Component | URL | Default credentials |
+|-----------|-----|---------------------|
+| **Grafana** | <http://grafana.app.local> | `admin / prom-operator` |
+| **Prometheus** | <http://prometheus.app.local> | – |
+| **Front-end** | <http://app.local> | – |
 
 ## 🧭 Repository Overview
 
@@ -131,3 +175,22 @@ This organization is structured into multiple public repositories:
 - ✅ **Deployed Kubernetes cluster**: Initialized cluster with `kubeadm`, `kubectl`, Flannel, and Helm.
 - ✅ **Installed production components**: Configured MetalLB, Nginx Ingress, and Kubernetes Dashboard.
 - ✅ **Enabled Istio service mesh**: Deployed Istio 1.25.2 with Ingress Gateway on `192.168.56.91`.
+
+### Assignment 3 – Operate and Monitor Kubernetes
+
+#### Targeted Rating
+
+| Category            | Rating     | Notes                                                                                          |
+|---------------------|------------|------------------------------------------------------------------------------------------------|
+| Kubernetes Usage    | **Good**   | Dedicated `app` namespace created via `--create-namespace`; Helm values parametrize image, port, etc. |
+| Helm Installation   | **Good**   | `helm upgrade --install`, separate `monitoring` release, configurable `ServiceMonitor` label.  |
+| App Monitoring      | **Good**   | Five custom metrics: 3 × Counter, 2 × Gauge, 1 × Histogram; exposed via `ServiceMonitor`.      |
+| Grafana Dashboard   | **Sufficient** | Five-panel dashboard imported manually; JSON stored in repo (`grafana/model-dashboard.json`).   |
+
+- ✅ **Converted app deployment to Helm chart**: Parameterized model service port, service names, and image versions.
+- ✅ **Deployed application via Helm**: Application and model-service deployed using Helm on self-provisioned Kubernetes cluster.
+- ✅ **Ingress exposure via Nginx**: App reachable at `http://app.local` through `ingress-nginx-controller` with MetalLB IP.
+- ✅ **Prometheus integration with ServiceMonitor**: Automatically scrapes `/metrics` endpoint from model-service.
+- ✅ **Custom application metrics**: Three metrics (Gauge, Counter, Histogram) defined in the app and collected.
+- ✅ **Grafana dashboard setup**: Manually imported JSON dashboard visualizes metrics using counters, gauges, and histogram functions.
+- 🛠 **Working on alerting**: Preparing PrometheusRule and AlertManager integration to support automatic notifications.

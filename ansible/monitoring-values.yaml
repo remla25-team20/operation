@@ -1,0 +1,23 @@
+grafana:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - grafana.app.local
+    paths:
+      - /
+    pathType: Prefix
+
+prometheus:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - prometheus.app.local
+    paths:
+      - /
+    pathType: Prefix
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
