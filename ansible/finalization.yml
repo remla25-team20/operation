@@ -9,6 +9,25 @@
         dest: /tmp/metallb-native.yaml
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /tmp/metallb-native.yaml
+    # Cert-Manager will allow us to use self-signed certificates
+    - name: Add cert-manager Helm repo
+      kubernetes.core.helm_repository:
+        name: jetstack
+        repo_url: https://charts.jetstack.io
+    - name: Install cert-manager with CRDs
+      kubernetes.core.helm:
+        name: cert-manager
+        chart_ref: jetstack/cert-manager
+        release_namespace: cert-manager
+        create_namespace: true
+        values:
+          installCRDs: true
+    - name: Copy selfsigned-issuer to VM
+      ansible.builtin.copy:
+        src: resources/selfsigned-issuer.yaml
+        dest: /tmp/selfsigned-issuer.yaml
+    - name: Apply selfsigned-issuer manifest
+      ansible.builtin.command: kubectl apply -f /tmp/selfsigned-issuer.yaml
     - name: Wait until metallb is fully initialized
       ansible.builtin.command: >
         kubectl wait
@@ -32,6 +51,8 @@
         release_namespace: ingress-nginx
         create_namespace: true
         name: ingress-nginx
+        set_values:
+          - value: controller.service.loadBalancerIP=192.168.56.90
     - name: Add Kubernetes-dashboard Helm repository
       kubernetes.core.helm_repository:
         name: kubernetes-dashboard

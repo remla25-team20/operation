@@ -1,3 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dashboard-cert
+  namespace: kubernetes-dashboard
+spec:
+  secretName: dashboard-tls
+  dnsNames:
+    - dashboard.local
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -7,6 +20,10 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+      - dashboard.local
+      secretName: dashboard-tls
   rules:
   - host: dashboard.local
     http:
