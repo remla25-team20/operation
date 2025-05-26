@@ -103,8 +103,10 @@ Created PR: https://github.com/remla25-team20/model-training/pull/7
 Approved PR: https://github.com/remla25-team20/model-training/pull/5
 
 -- Yiming --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/model-training/pull/6 (A4)
+Approved PR: https://github.com/remla25-team20/model-training/pull/9 (A4)
+Approved PR: https://github.com/remla25-team20/model-service/pull/8
+
 
 -- Dirk --
 Created PR: https://github.com/remla25-team20/model-training/pull/9 (Related to A4)
