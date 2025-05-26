@@ -1,4 +1,4 @@
-# Week 1
+# Week 2
 
 -- Jeroen --
 Setup the organisation on GitHub and created all repositories
@@ -28,7 +28,7 @@ Reviewed PR: https://github.com/remla25-team20/model-service/pull/2
 Created PR: https://github.com/remla25-team20/model-training/pull/1 (Related to A1)
 Approved PR: https://github.com/remla25-team20/model-service/pull/1
 
-# Week 2
+# Week 3
 
 -- Jeroen --
 Created PR: https://github.com/remla25-team20/operation/pull/3 (Related to A2)
@@ -51,7 +51,7 @@ Approved PR: https://github.com/remla25-team20/model-service/pull/3
 Created PR: https://github.com/remla25-team20/model-service/pull/3 (Related to A1)
 Approved PR: https://github.com/remla25-team20/operation/pull/7
 
-# Week 3
+# Week 4
 
 -- Jeroen --
 Created PR: https://github.com/remla25-team20/app/pull/4 (Related to A1)
@@ -86,11 +86,13 @@ Approved PR: https://github.com/remla25-team20/app/pull/2
 Created PR: https://github.com/remla25-team20/operation/pull/16 (Related to A3)
 Approved PR: https://github.com/remla25-team20/app/pull/4 (Related to A3)
 
-# Week 4
+# Week 5
 
 -- Jeroen --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/20 (Related to A2)
+Created PR: https://github.com/remla25-team20/model-training/pull/8 (Related to A4)
+Created PR: https://github.com/remla25-team20/model-service/pull/8 (Related to A1)
+Approved PR: https://github.com/remla25-team20/operation/pull/21 (Related to A3)
 
 -- Adrian --
 Created PR: https://github.com/remla25-team20/model-training/pull/5 (A4)
@@ -107,28 +109,6 @@ Approved PR:
 -- Dirk --
 Created PR: https://github.com/remla25-team20/model-training/pull/9 (Related to A4)
 Approved PR: https://github.com/remla25-team20/model-training/pull/6 (Related to A4)
-
-# Week 5
-
--- Jeroen --
-Created PR:
-Approved PR:
-
--- Adrian --
-Created PR:
-Approved PR:
-
--- Nathan --
-Created PR:
-Approved PR:
-
--- Yiming --
-Created PR:
-Approved PR:
-
--- Dirk --
-Created PR:
-Approved PR:
 
 # Week 6
 
