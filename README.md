@@ -194,3 +194,15 @@ This organization is structured into multiple public repositories:
 - ✅ **Custom application metrics**: Three metrics (Gauge, Counter, Histogram) defined in the app and collected.
 - ✅ **Grafana dashboard setup**: Manually imported JSON dashboard visualizes metrics using counters, gauges, and histogram functions.
 - 🛠 **Working on alerting**: Preparing PrometheusRule and AlertManager integration to support automatic notifications.
+
+
+### Assignment 4 – ML Configuration Management & ML Testing
+
+#### Targeted Rating
+| Category            | Rating     | Notes                                                                                          |
+|---------------------|------------|------------------------------------------------------------------------------------------------|
+| Automated Tests    | **Poor/Sufficient**   | Automated tests included, following ML Test Score methodology but not yet covering sufficient categories. Coverage is already automatically measured. |
+| Continuous Training   | **Excellent**   | Workflows in model-training automatically conduct tests and generate badges. |
+| Project Organization      | **Excellent**   |   All elements achieved.   |
+| Pipeline Management with DVC | **Excellent** | DVC pipeline is setup with Google Drive |
+| Code Quality   | **Excellent** | PyLint and Flake8 are configured with a custom rule for detecting hard-coded variables.   |
