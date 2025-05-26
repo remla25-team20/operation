@@ -105,8 +105,8 @@ Created PR:
 Approved PR:
 
 -- Dirk --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/model-training/pull/9 (Related to A4)
+Approved PR: https://github.com/remla25-team20/model-training/pull/6 (Related to A4)
 
 # Week 5
 
