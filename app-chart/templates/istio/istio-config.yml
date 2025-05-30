@@ -1,0 +1,123 @@
+# istio-config.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: model-service-v1
+  labels: { app: model-service, version: v1 }
+spec:
+  containers:
+  - name: {{ .Values.modelService.name }}
+    image: {{ .Values.modelService.repo }}:{{ .Values.modelService.version }}
+    ports: [ containerPort: {{ .Values.modelService.port }} ]
+---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: lib-v2
+#   labels: { app: lib, version: v2 }
+# spec:
+#   containers:
+#   - name: libe
+#     image: proksch/istio-example-lib:0.0.2
+# ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-v1
+  labels: { app: app, version: v1 }
+spec:
+  containers:
+  - name: {{ .Values.app.name }}
+    image: {{ .Values.app.repo }}:{{ .Values.app.version }}
+    ports: [ containerPort: {{ .Values.app.port }} ]
+  env:
+  - { name: SERVICE_URL, value: http://model-service:1234/ }
+---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: app-v2
+#   labels: { app: app, version: v2 }
+# spec:
+#   containers:
+#   - name: app
+#     image: proksch/istio-example-app:0.0.2
+#     ports: [ containerPort: 8080 ]
+#     env:
+#     - { name: LIB_URL, value: http://lib:1234/ }
+# ---
+
+apiVersion: v1
+kind: Service
+metadata: { name: model-service }
+spec:
+  selector: { app: model-service }
+  ports:
+  - { name: http, port: 1234, targetPort: {{ .Values.modelService.port }} }
+---
+apiVersion: v1
+kind: Service
+metadata: {name: app }
+spec:
+  selector: { app: app }
+  ports:
+  - { name: http, port: 1234, targetPort: {{.Values.app.port }} }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata: { name: app-gateway }
+spec:
+  selector: { istio: ingressgateway }
+  servers:
+  - port: { number: {{ .Values.service.port  }}, name: http, protocol: HTTP }
+    hosts: [ "*" ]
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: app-entry-service }
+spec:
+  gateways: [ app-gateway ]
+  hosts: [ "*" ]
+  http:
+  - match:
+    - uri: { prefix: / }
+    route:
+    - destination: { host: app, subset: v1 }
+#     weight: 90
+#   - destination: { host: app, subset: v2 }
+#     weight: 10
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata: {name: model-service-dr }
+spec:
+  host: model-service
+  subsets:
+  - name: v1
+    labels: { version: v1 }
+# - name: v2
+#   labels: {version: v2 }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: model-service-vs }
+spec:
+  hosts: [ model-service ]
+  http:
+# - match:
+#   - sourceLabels: { version: v2 }
+#   route:
+#   - destination: { host: lib, subset: v2 }
+  - route: # default route
+    - destination: { host: model-service, subset: v1 }
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata: { name: app-dr }
+spec:
+  host: app
+  subsets:
+  - name: v1
+    labels: { version: v1 }
+# - name: v2
+#   labels: { version: v2 }

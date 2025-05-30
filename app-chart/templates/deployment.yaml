@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: model-service
-        image: ghcr.io/remla25-team20/model-service:{{  .Values.modelService.version  }}
+        image: {{  .Values.modelService.repo  }}:{{  .Values.modelService.version  }}
         ports:
         - containerPort: {{ .Values.modelService.port }}
 ---
