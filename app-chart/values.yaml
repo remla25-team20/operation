@@ -134,7 +134,7 @@ modelService:
 
 app:
   version: 0.2.0
-  versionCanary: 0.2.0
+  versionCanary: 0.3.0
 
 serviceMonitor:
   enabled: true          
