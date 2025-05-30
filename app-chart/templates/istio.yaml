@@ -43,3 +43,37 @@ spec:
     - name: v2
       labels:
         version: "{{ .Values.app.versionCanary }}"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: model-service-dr
+spec:
+  host: model-service
+  subsets:
+    - name: v1
+      labels:
+        version: "{{ .Values.modelService.version }}"
+    - name: v2
+      labels:
+        version: "{{ .Values.modelService.versionCanary }}"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: model-service-vs
+spec:
+  hosts:
+    - model-service
+  http:
+    - match:
+        - sourceLabels:
+            version: "{{ .Values.app.versionCanary }}"
+      route:
+        - destination:
+            host: model-service
+            subset: v2
+    - route:
+        - destination:
+            host: model-service
+            subset: v1
