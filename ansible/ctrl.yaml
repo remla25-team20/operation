@@ -60,3 +60,7 @@
         - helm
     # - name: Install Helm diff package
     #   ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
+    - name: Enable Istio injection in default namespace
+      ansible.builtin.command: kubectl label namespace default istio-injection=enabled
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf

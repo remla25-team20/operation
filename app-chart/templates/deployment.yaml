@@ -3,17 +3,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: model-service-deployment
-  labels:
-    app: model-service
+  labels: { app: model-service, version: "{{ .Values.modelService.version }}" }
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: model-service
+      version: "{{ .Values.modelService.version }}"
   template:
     metadata:
       labels:
         app: model-service
+        version: "{{ .Values.modelService.version }}"
     spec:
       containers:
       - name: model-service
@@ -24,22 +25,78 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: model-service-deployment-canary
+  labels: { app: model-service, version: "{{ .Values.modelService.versionCanary }}" }
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: model-service
+      version: "{{ .Values.modelService.versionCanary }}"
+  template:
+    metadata:
+      labels:
+        app: model-service
+        version: "{{ .Values.modelService.versionCanary }}"
+    spec:
+      containers:
+      - name: model-service
+        image: ghcr.io/remla25-team20/model-service:{{  .Values.modelService.versionCanary  }}
+        ports:
+        - containerPort: {{ .Values.modelService.port }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: app-deployment
-  labels:
-    app: app
+  labels: { app: app, version: "{{ .Values.app.version }}" }
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: app
+      version: "{{ .Values.app.version }}"
   template:
     metadata:
       labels:
         app: app
+        version: "{{ .Values.app.version }}"
     spec:
       containers:
       - name: app
         image: "ghcr.io/remla25-team20/app:{{ .Values.app.version  }}"
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: HOSTNAME
+          value: "0.0.0.0"
+        - name: NEXT_PUBLIC_API_BASE_URL
+          value: "{{ .Values.modelService.name  }}:{{  .Values.modelService.port  }}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment-canary
+  labels: { app: app, version: "{{ .Values.app.versionCanary }}" }
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app
+      version: "{{ .Values.app.versionCanary }}"
+  template:
+    metadata:
+      labels:
+        app: app
+        version: "{{ .Values.app.versionCanary }}"
+    spec:
+      containers:
+      - name: app
+        image: "ghcr.io/remla25-team20/app:{{ .Values.app.versionCanary  }}"
         ports:
         - containerPort: 3000
         env:
