@@ -129,10 +129,12 @@ affinity: {}
 modelService:
   name: model-service
   version: 0.1.3 # this version has the most recent metrics
+  versionCanary: 0.1.2 
   port: 8080
 
 app:
   version: 0.2.0
+  versionCanary: 0.1.0
 
 serviceMonitor:
   enabled: true          
