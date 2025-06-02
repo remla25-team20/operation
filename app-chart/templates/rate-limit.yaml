@@ -180,13 +180,13 @@ spec:
               - actions:
                   # Action 1: bucket by path “predict”
                   - header_value_match:
-                      descriptor_key: "PATH"
-                      descriptor_value: "predict"
-                      headers:
-                        - name: ":path"
-                          safe_regex_match:
-                            google_re2: {}
-                            regex: "^/predict.*$"   # Matches /predict and any query string
+                    descriptor_key: "PATH"
+                    descriptor_value: "predict"
+                    headers:
+                      - name: ":path"
+                        safe_regex_match:
+                          google_re2: {}
+                          regex: "^/(model-service/)?predict.*$"
                   # Action 2: bucket by x-user header
                   - request_headers:
                       header_name: "x-user"
