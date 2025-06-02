@@ -211,3 +211,14 @@ This organization is structured into multiple public repositories:
 | Project Organization      | **Excellent**   |   All elements achieved.   |
 | Pipeline Management with DVC | **Excellent** | DVC pipeline is setup with Google Drive |
 | Code Quality   | **Excellent** | PyLint and Flake8 are configured with a custom rule for detecting hard-coded variables.   |
+
+### Assignment 5 - Istio Service Mesh
+
+#### Targeted Rating
+| Category            | Rating     | Notes                                                                                          |
+|---------------------|------------|------------------------------------------------------------------------------------------------|
+| Traffic Management  | **Excellent**   | Version-Consistent 90/10 routing, Sticky Sessions implemented   |
+| Additional Use Case   | **Sufficient**   | Baseline rate limiting implemented but issues still persist. |
+| Continuous Experimentation     | **Good**   |   Button color experiment is implemented and relevant metrics are measured.  |
+| Deployment Documentation | **Good / Excellent** | Deployment.md made to the best of current insight. |
+| Extension Proposal   | **Insufficient** | Not implemented for this deadline due to time constraints.   |
