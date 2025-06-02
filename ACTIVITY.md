@@ -107,7 +107,6 @@ Created PR: https://github.com/remla25-team20/model-training/pull/6 (A4)
 Approved PR: https://github.com/remla25-team20/model-training/pull/9 (A4)
 Approved PR: https://github.com/remla25-team20/model-service/pull/8
 
-
 -- Dirk --
 Created PR: https://github.com/remla25-team20/model-training/pull/9 (Related to A4)
 Approved PR: https://github.com/remla25-team20/model-training/pull/6 (Related to A4)
@@ -115,8 +114,9 @@ Approved PR: https://github.com/remla25-team20/model-training/pull/6 (Related to
 # Week 6
 
 -- Jeroen --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/app/pull/6 (Related to A5)
+Created PR: https://github.com/remla25-team20/operation/pull/35 (Related to A5)
+Approved PR: https://github.com/remla25-team20/operation/pull/30 (Related to A5)
 
 -- Adrian --
 Created PR:
