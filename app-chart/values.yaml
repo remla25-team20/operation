@@ -139,3 +139,6 @@ app:
 serviceMonitor:
   enabled: true          
   release: monitoring
+
+rateLimit:
+  enabled: true

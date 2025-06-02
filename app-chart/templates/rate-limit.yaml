@@ -1,0 +1,194 @@
+{{- if .Values.rateLimit.enabled }}
+############################################
+# 1) ConfigMap – rate-limit rule definition
+############################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ratelimit-config
+data:
+  # This file is loaded by envoyproxy/ratelimit on start-up
+  config.yaml: |
+    domain: ratelimit
+    descriptors:
+      # First dimension: the request path bucket “predict”
+      - key: PATH
+        value: "predict"
+        descriptors:
+          # Second dimension: the x-user header value
+          - key: x-user
+            rate_limit:
+              unit: minute
+              requests_per_unit: 10
+---
+################################
+# 2) Redis – counter storage
+################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app: redis
+  ports:
+    - port: 6379
+      name: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+---
+####################################################
+# 3) envoyproxy/ratelimit – core rate-limit service
+####################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: ratelimit
+spec:
+  selector:
+    app: ratelimit
+  ports:
+    - name: http
+      port: 8080
+    - name: grpc
+      port: 8081          # Envoy talks gRPC on 8081
+    - name: debug
+      port: 6070
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ratelimit
+spec:
+  selector:
+    matchLabels:
+      app: ratelimit
+  strategy:
+    type: Recreate        # Easier reload when ConfigMap changes
+  template:
+    metadata:
+      labels:
+        app: ratelimit
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: ratelimit-config
+      containers:
+        - name: ratelimit
+          image: envoyproxy/ratelimit:30a4ce1a
+          command: ["/bin/ratelimit"]
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+            - containerPort: 6070
+          env:
+            - name: LOG_LEVEL
+              value: debug
+            - name: REDIS_SOCKET_TYPE
+              value: tcp
+            - name: REDIS_URL
+              value: redis:6379
+            - name: RUNTIME_ROOT
+              value: /data
+            - name: RUNTIME_SUBDIRECTORY
+              value: ratelimit
+          volumeMounts:
+            - name: config-volume
+              mountPath: /data/ratelimit/config
+---
+#############################################################
+# 4) EnvoyFilter A – inject RateLimit filter at the gateway
+#############################################################
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: ratelimit-filter
+  namespace: istio-system               # Must be the same ns as ingressgateway
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: HTTP_FILTER              # Insert the ratelimit HTTP filter
+      match:
+        context: GATEWAY
+        listener:
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+              subFilter:
+                name: "envoy.filters.http.router"
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.ratelimit
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
+            domain: ratelimit          # Must match ConfigMap
+            failure_mode_deny: true
+            timeout: 1s
+            rate_limit_service:
+              transport_api_version: V3
+              grpc_service:
+                envoy_grpc:
+                  cluster_name: "outbound|8081||ratelimit.{{ .Release.Namespace }}.svc.cluster.local"
+---
+###################################################################
+# 5) EnvoyFilter B – apply rule on /predict and use x-user header
+###################################################################
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: ratelimit-predict
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      istio: ingressgateway
+  configPatches:
+    - applyTo: HTTP_ROUTE
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            name: "*:80"
+            route:
+              action: ANY
+      patch:
+        operation: MERGE
+        value:
+          route:
+            rate_limits:
+              - actions:
+                  # Action 1: bucket by path “predict”
+                  - header_value_match:
+                      descriptor_key: "PATH"
+                      descriptor_value: "predict"
+                      headers:
+                        - name: ":path"
+                          safe_regex_match:
+                            google_re2: {}
+                            regex: "^/predict.*$"   # Matches /predict and any query string
+                  # Action 2: bucket by x-user header
+                  - request_headers:
+                      header_name: "x-user"
+                      descriptor_key: "x-user"
+{{- end }}
