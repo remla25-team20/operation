@@ -123,8 +123,8 @@ Created PR:
 Approved PR:
 
 -- Nathan --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/29
+Approved PR: https://github.com/remla25-team20/operation/pull/32
 
 -- Yiming --
 Created PR:
