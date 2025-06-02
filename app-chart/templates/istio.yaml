@@ -18,6 +18,7 @@ spec:
     - "*"
   http:
     - match:
+<<<<<<< HEAD
       - uri:
           prefix: /model-service/predict
       route:
@@ -27,15 +28,48 @@ spec:
     - match:
         - uri:
             prefix: /
+=======
+        - headers:
+            x-version:
+              exact: "{{ .Values.app.version }}"
+>>>>>>> f32eb17 (Istio update for sticky sessions)
       route:
         - destination:
             host: app-service
             subset: v1
+          headers:
+            response:
+              add:
+                x-version: "{{ .Values.app.version }}"
+    - match:
+        - headers:
+            version:
+              exact: "{{ .Values.app.versionCanary }}"
+      route:
+        - destination:
+            host: app-service
+            subset: v2
+          headers:
+            response:
+              add:
+                x-version: "{{ .Values.app.versionCanary }}"
+    - route:
+        - destination:
+            host: app-service
+            subset: v1
           weight: 90
+          headers:
+            response:
+              add:
+                x-version: "{{ .Values.app.version }}"
         - destination:
             host: app-service
             subset: v2
           weight: 10
+          headers:
+            response:
+              add:
+                x-version: "{{ .Values.app.versionCanary }}"
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -80,7 +114,15 @@ spec:
         - destination:
             host: model-service
             subset: v2
+          headers:
+            response:
+              add:
+                x-version: "{{ .Values.app.versionCanary }}"
     - route:
         - destination:
             host: model-service
             subset: v1
+          headers:
+            response:
+              add:
+                x-version: "{{ .Values.app.version }}"
