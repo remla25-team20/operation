@@ -85,6 +85,8 @@ spec:
         env:
         - name: REDIS_URL
           value: "redis://redis.default.svc.cluster.local:6379"
+        - name: REDIS_SOCKET_TYPE
+          value: tcp
         - name: USE_STATSD
           value: "false"
         - name: LOG_LEVEL
