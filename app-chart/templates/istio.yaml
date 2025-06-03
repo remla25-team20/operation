@@ -18,6 +18,13 @@ spec:
     - "*"
   http:
     - match:
+      - uri:
+          prefix: /model-service/predict
+      route:
+        - destination:
+            host: model-service
+            subset: v1   # or as needed
+    - match:
         - uri:
             prefix: /
       route:

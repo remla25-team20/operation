@@ -128,8 +128,8 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: 0.1.5
-  versionCanary: 0.1.5
+  version: 0.1.6 # this version has the most recent metrics
+  versionCanary: 0.1.6 # for stopwords bug fix since 0.1.6
   port: 8080
 
 app:
@@ -139,3 +139,6 @@ app:
 serviceMonitor:
   enabled: true          
   release: monitoring
+
+rateLimit:
+  enabled: true
