@@ -1,24 +1,18 @@
 {{- if .Values.rateLimit.enabled }}
-############################################
-# 1) ConfigMap – limit rule
-############################################
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: ratelimit-config
+  namespace: default
 data:
   config.yaml: |
     domain: ratelimit
     descriptors:
-      # bucket 1: request path “predict”
       - key: PATH
         value: "predict"
-        descriptors:
-          # bucket 2: x-user header
-          - key: x-user
-            rate_limit:
-              unit: minute
-              requests_per_unit: 2
+        rate_limit:
+          unit: minute
+          requests_per_unit: 2
 ---
 ################################
 # 2) Redis – counter storage
@@ -179,10 +173,10 @@ spec:
                         safe_regex_match:
                           google_re2: {}
                           regex: "^/(model-service/)?predict.*$"
-                # bucket by x-user header
-                - request_headers:
-                    headerName: "x-user"
-                    descriptorKey: "x-user"
+                # # bucket by x-user header
+                # - request_headers:
+                #     headerName: "x-user"
+                #     descriptorKey: "x-user"
   - applyTo: HTTP_ROUTE
     match:
       context: GATEWAY
