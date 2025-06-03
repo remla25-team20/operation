@@ -123,6 +123,7 @@ Created PR: https://github.com/remla25-team20/operation/pull/32 (A5)
 Created PR: https://github.com/remla25-team20/app/pull/7 (A5)
 Created PR: https://github.com/remla25-team20/model-service/pull/9 (A5)
 Approved PR: https://github.com/remla25-team20/operation/pull/35 (A5: Started the review in W6)
+Approved PR: https://github.com/remla25-team20/operation/pull/31 (A5)
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/operation/pull/29
