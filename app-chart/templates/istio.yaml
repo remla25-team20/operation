@@ -18,18 +18,9 @@ spec:
     - "*"
   http:
     - match:
-      - uri:
-          prefix: /model-service/predict
-      route:
-        - destination:
-            host: model-service
-            subset: v1   # or as needed
-    - match:
-        - uri:
-            prefix: /
-          headers:
-            cookie:
-              regex: ".*version={{ .Values.app.version }}.*"
+      - headers:
+          cookie:
+            regex: ".*version={{ .Values.app.version }}.*"
       route:
         - destination:
             host: app-service
