@@ -76,6 +76,8 @@ spec:
           value: "0.0.0.0"
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "{{ .Values.modelService.name  }}:{{  .Values.modelService.port  }}"
+        - name: NEXT_PUBLIC_APP_VERSION
+          value: "{{ .Values.app.version }}"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -108,6 +110,8 @@ spec:
           value: "0.0.0.0"
         - name: NEXT_PUBLIC_API_BASE_URL
           value: "{{ .Values.modelService.name  }}:{{  .Values.modelService.port  }}"
+        - name: NEXTU_PUBLIC_APP_VERSION
+          value: "{{ .Values.app.versionCanary }}"
 ---
 apiVersion: v1
 kind: Service
