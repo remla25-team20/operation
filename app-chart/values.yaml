@@ -133,8 +133,8 @@ modelService:
   port: 8080
 
 app:
-  version: 0.3.7
-  versionCanary: 0.4.0
+  version: 0.3.8
+  versionCanary: 0.4.1
 
 serviceMonitor:
   enabled: true          
