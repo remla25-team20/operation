@@ -40,6 +40,7 @@
       ansible.builtin.command: kubectl apply -f /tmp/kube-flannel.yml
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
+      changed_when: false   # Kubernetes takes care of the idempotency
     - name: Add Helm ASC key
       ansible.builtin.apt_key:
         url: https://baltocdn.com/helm/signing.asc
@@ -60,7 +61,14 @@
         - helm
     # - name: Install Helm diff package
     #   ansible.builtin.command: helm plugin install https://github.com/databus23/helm-diff
+    - name: Check if Istio injection is enabled in default namespace
+      ansible.builtin.command: kubectl get namespace default -o jsonpath='{.metadata.labels.istio-injection}'
+      register: istio_injection
+      environment:
+        KUBECONFIG: /etc/kubernetes/admin.conf
+      changed_when: false
     - name: Enable Istio injection in default namespace
       ansible.builtin.command: kubectl label namespace default istio-injection=enabled
       environment:
         KUBECONFIG: /etc/kubernetes/admin.conf
+      when: istio_injection.stdout != 'enabled'

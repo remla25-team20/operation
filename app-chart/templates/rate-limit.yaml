@@ -18,7 +18,7 @@ data:
       - key: PATH
         rate_limit:
           unit: minute
-          requests_per_unit: 100
+          requests_per_unit: 1
 ---
 ############################################
 # 2. Redis (store counters for rate-limit)
@@ -133,7 +133,7 @@ metadata:
 spec:
   workloadSelector:
     labels:
-      istio: ingressgateway    # or app: istio-ingressgateway (check your actual labels!)
+      app: istio-ingressgateway    # or app: istio-ingressgateway (check your actual labels!)
   configPatches:
   - applyTo: CLUSTER
     match:
@@ -170,7 +170,6 @@ spec:
         name: envoy.filters.http.ratelimit
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
-          domain: ratelimit
           failure_mode_deny: true
           timeout: 10s
           rate_limit_service:
