@@ -74,6 +74,7 @@
         dest: /tmp/dashboard-adminuser.yaml
     - name: Apply adminuser manifest
       ansible.builtin.command: kubectl apply -f /tmp/dashboard-adminuser.yaml
+      changed_when: false
     - name: Copy ingress manifest for dashboard
       ansible.builtin.copy:
         src: resources/dashboard-ingress.yaml
@@ -141,4 +142,5 @@
         istioctl install -y -f /tmp/istio-gateway.yml
       args:
         chdir: /home/vagrant
+      changed_when: false
 
