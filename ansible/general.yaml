@@ -14,6 +14,7 @@
         - "keys/*.pub"
     - name: Disable SWAP
       ansible.builtin.shell: swapoff -a
+      changed_when: false
     - name: Disable SWAP in fstab
       ansible.builtin.lineinfile:
         path: /etc/fstab
