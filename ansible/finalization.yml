@@ -9,6 +9,7 @@
         dest: /tmp/metallb-native.yaml
     - name: Apply Flannel manifest
       ansible.builtin.command: kubectl apply -f /tmp/metallb-native.yaml
+      changed_when: false
     # Cert-Manager will allow us to use self-signed certificates
     - name: Add cert-manager Helm repo
       kubernetes.core.helm_repository:
@@ -28,6 +29,7 @@
         dest: /tmp/selfsigned-issuer.yaml
     - name: Apply selfsigned-issuer manifest
       ansible.builtin.command: kubectl apply -f /tmp/selfsigned-issuer.yaml
+      changed_when: false
     - name: Wait until metallb is fully initialized
       ansible.builtin.command: >
         kubectl wait
@@ -35,12 +37,14 @@
         -l app=metallb,component=controller --for=condition=ready
         pod
         --timeout=60s
+      changed_when: false
     - name: Copy metallb resource definition manifest to VM
       ansible.builtin.copy:
         src: resources/metallb-resources.yaml
         dest: /tmp/metallb-resources.yaml
     - name: Initialize IPAddressPool and L2Advertisement
       ansible.builtin.command: kubectl apply -f /tmp/metallb-resources.yaml
+      changed_when: false
     - name: Add Ingress-Nginx Helm repository
       kubernetes.core.helm_repository:
         name: ingress-nginx
@@ -53,6 +57,7 @@
         name: ingress-nginx
         set_values:
           - value: controller.service.loadBalancerIP=192.168.56.90
+      changed_when: false
     - name: Add Kubernetes-dashboard Helm repository
       kubernetes.core.helm_repository:
         name: kubernetes-dashboard
@@ -80,8 +85,10 @@
         -l app.kubernetes.io/name=ingress-nginx,app.kubernetes.io/component=controller --for=condition=ready
         pod
         --timeout=60s
+      changed_when: false
     - name: Apply Dashboard Ingress manifest
       ansible.builtin.command: kubectl apply -f /tmp/dashboard-ingress.yaml
+      changed_when: false
 # Needed for monitoring
     - name: Add Prometheus Community repo
       kubernetes.core.helm_repository:

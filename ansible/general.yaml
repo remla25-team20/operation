@@ -75,9 +75,14 @@
         path: /etc/containerd
         state: directory
         mode: '0755'
+    - name: check if containerd config.toml exists
+      ansible.builtin.stat:
+        path: /etc/containerd/config.toml
+      register: containerd_config_stat
     - name: Generate the output of default containerd config
       ansible.builtin.command: containerd config default
       register: containerd_config
+      when: not containerd_config_stat.stat.exists
     - name: Write default config to /etc/containerd/config.toml
       ansible.builtin.copy:
         dest: /etc/containerd/config.toml
@@ -85,6 +90,7 @@
         owner: root
         group: root
         mode: '0644'
+      when: not containerd_config_stat.stat.exists
     - name: Update specific values in containerd config.toml
       ansible.builtin.replace:
         path: /etc/containerd/config.toml
@@ -94,10 +100,12 @@
         - { key: "disable_apparmor", value: "true", section: 'plugins."io.containerd.grpc.v1.cri"'}
         - { key: "sandbox_image", value: '"registry.k8s.io/pause:3.10"', section: 'plugins."io.containerd.grpc.v1.cri"'}
         - { key: "SystemdCgroup", value: "true", section: 'plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options'}
+      when: not containerd_config_stat.stat.exists
     - name: Restart containerd
       ansible.builtin.service:
         name: containerd
         state: restarted
+      when: not containerd_config_stat.stat.exists
     - name: Start kubelet service
       ansible.builtin.service:
         name: kubelet
