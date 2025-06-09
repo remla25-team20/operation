@@ -1,0 +1,53 @@
+# operation/app-chart/templates/model-service-monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: model-service-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: model-service
+    release: prometheus  # Match Prometheus CRD label for discovery
+spec:
+  selector:
+    matchLabels:
+      app: model-service  # Match the Service labels in deployment.yml
+  endpoints:
+  - port: http  # Match the Service port name (to be added in deployment.yml)
+    path: /metrics
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: model-service-alerts
+  namespace: monitoring
+  labels:
+    release: prometheus  # must match the label used by your Prometheus deployment
+spec:
+  groups:
+  - name: model-service.rules
+    rules:
+    - alert: HighModelCPUUsage
+      expr: avg(rate(container_cpu_usage_seconds_total{pod=~"app-model-service-.*"}[5m])) * 100 > 1
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage on model-service"
+        description: "CPU usage has been over 80% for more than 1 minute on model-service."
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: alertmanager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    release: prometheus
+spec:
+  replicas: 1
+  serviceAccountName: alertmanager
+  secrets:
+  - alertmanager-secret
+  configSecret: alertmanager-config
+  storage:
+    emptyDir: {}
