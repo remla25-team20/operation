@@ -108,6 +108,23 @@
         update_repo_cache: true
         values_files:
           - /tmp/monitoring-values.yaml
+# Add mailpit for SMTP mail testing
+    - name: Add Jouve Helm repo for Mailpit
+      kubernetes.core.helm_repository:
+        name: jouve
+        repo_url: https://jouve.github.io/charts/
+    - name: Copy Mailpit values.yaml to remote machine
+      ansible.builtin.copy:
+        src: mailpit-values.yaml   # Local file in ansible/ folder
+        dest: /tmp/mailpit-values.yaml
+    - name: Install Mailpit (SMTP debug server)
+      kubernetes.core.helm:
+        name: mailpit
+        chart_ref: jouve/mailpit
+        release_namespace: monitoring          # Use the same namespace as Prometheus
+        update_repo_cache: true
+        values_files:
+          - /tmp/mailpit-values.yaml
 #   Step 23: Install Istio
     - name: Detect machine architecture
       ansible.builtin.set_fact:

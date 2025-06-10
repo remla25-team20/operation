@@ -114,16 +114,46 @@ Deploying our own application to kubernetes and monitoring
    KUBECONFIG=kubeconfig kubectl get svc -n ingress-nginx
    ```
 
-4. **Install Monitoring via Ansible**
+4. **Monitoring and Alerting**
 
-Monitoring (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
+   **Monitoring** (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
 
-Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
+   Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
 
-```bash
-192.168.56.90 grafana.app.local prometheus.app.local
-
+   ```bash
+   192.168.56.90 grafana.app.local
+   192.168.56.90 prometheus.app.local
+   192.168.56.90 mailpit.app.local
    ```
+
+   **Alerting**manager needs a Secret in the monitoring namespace to be able to initialize.
+
+   Create `alertmanager-secret.yaml`
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+      name: alertmanager-email-secret
+      namespace: monitoring
+   type: Opaque
+   stringData:
+      smtpPassword: "<YOUR_SMTP_PASSWORD>" # not really need to be real one, as we use Mailbit
+   ```
+
+   We include a built-in synthetic alert to verify end-to-end email routing via Mailpit. To toggle it, add to your `values.yaml`:
+
+   ```yaml
+   testEmail:
+     enabled: true   # set to false to disable the TestEmail rule
+   ```  
+   ##### Alerting Rules for Excellence
+   We include two production-grade alert rules to monitor `model-service`
+   - **HighModelRequestLatency**: fires if the 95th-percentile request latency exceeds 1 s for more than 2 minutes (severity: warning).  
+   - **HighModelErrorRate**: fires if the prediction error rate exceeds 10 % over a 5-minute window (severity: critical).
+
+   All alert notifications (including the synthetic TestEmail alert) are routed to Mailpit rather than real email addresses. You can view them in the Mailpit UI at <http://mailpit.app.local>.
+
+
 5. **View & configure monitoring dashboards**
    Once the `monitoring` Helm release is **`STATUS: deployed`** it can take 15-30 s before Prometheus finishes its first scrape of *model-service*.  
    During that time Grafana panels may still read “No data” – just refresh once the target turns **UP** (Prometheus → *Status ▸ Targets*).
@@ -146,6 +176,16 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
    | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
    | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
    | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
+
+
+### Quick links
+
+| Component | URL | Default credentials |
+|-----------|-----|---------------------|
+| **Grafana** | <http://grafana.app.local> | `admin / prom-operator` |
+| **Prometheus** | <http://prometheus.app.local> | – |
+| **Mailpit** | <http://mailpit.app.local> | - |
+| **Front-end** | <http://app.local> | – |
 
 ## 🧭 Repository Overview
 
