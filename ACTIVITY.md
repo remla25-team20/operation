@@ -155,8 +155,8 @@ Approved PR: https://github.com/remla25-team20/lib-ml/pull/10 (Related to A1)
 Approved PR: https://github.com/remla25-team20/operation/pull/41 (Related to A5)
 
 -- Yiming --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/48 (A3)
+Approved PR: https://github.com/remla25-team20/operation/pull/42
 
 -- Dirk --
 Created PR:
