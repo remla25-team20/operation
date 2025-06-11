@@ -1,0 +1,8 @@
+# mailpit-values.yaml
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hostname: mailpit.app.local
+
