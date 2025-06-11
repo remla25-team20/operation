@@ -148,8 +148,10 @@ Created PR: https://github.com/remla25-team20/operation/pull/42 (Related to A2)
 Approved PR: https://github.com/remla25-team20/model-training/pull/10 (Related to A4)
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/app/pull/7
+Created PR: https://github.com/remla25-team20/model-service/pull/11
+Created PR: https://github.com/remla25-team20/operation/pull/41
+Approved PR: https://github.com/remla25-team20/operation/pull/45
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/operation/pull/45 (Related to A2)
