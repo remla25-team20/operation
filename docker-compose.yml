@@ -3,23 +3,41 @@ version: "3.8"
 services:
   app:
     image: "ghcr.io/remla25-team20/app:0.4.100"
+    restart: "always"
     ports:
-      - "3000:3000"
+      - "${APP_PORT}:3000"
+    env_file: .env
     environment:
       - NODE_ENV=production
       - PORT=3000
       - HOSTNAME=0.0.0.0
       - APP_VERSION=0.4.1
       - API_BASE_URL=http://model-service:8080
+    networks:
+      - remla
 
   model-service:
     image: "ghcr.io/remla25-team20/model-service:0.1.101"
+    restart: "always"
+    env_file: .env
+    secrets:
+      - useless_secret
     environment:
       - MODEL_SERVICE_VERSION=0.1.6
     volumes:
       - user-feedback-data-volume:/mnt/shared/user-feedback-data
       - models-volume:/mnt/shared/models/
+    networks:
+      - remla
+
+secrets:
+  useless_secret:
+    file: ./some-secret.txt
 
 volumes:
   user-feedback-data-volume:
   models-volume:
+
+networks:
+  remla:
+    driver: bridge
