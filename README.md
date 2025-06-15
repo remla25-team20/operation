@@ -75,11 +75,31 @@ Deploying our own application to kubernetes and monitoring
    ```
 
    
-
 3. **Application connect**
-   - The application will be available via the ingress-nginx-controller on [http://app.local](http://app.local) when you have added the following to your `/etc/hosts`.
+
+   The application (and its dashboards) are reachable once the four host-names below resolve to the MetalLB IP **192.168.56.90**:
+
+   | Component | Host-name |
+   |-----------|-----------|
+   | Front-end / API | `app.local` |
+   | Grafana | `grafana.app.local` |
+   | Prometheus | `prometheus.app.local` |
+   | Mailpit | `mailpit.app.local` |
+
+   **Quick option A – one-liner script (recommended)**
+
    ```bash
-   192.168.56.90  app.local
+   # From the repo root
+   chmod +x add_ingress_hosts.sh     # make it executable – run once
+   sudo ./add_ingress_hosts.sh [IP]  # If no IP is given, default to 192.168.56.90
+   # writes/updates the hosts block
+   ```
+   The script is **idempotent**: It will clean itself upon re-run.
+
+   **Option B – manual edit**
+      Added the following to your `/etc/hosts`.
+   ```bash
+      192.168.56.90 app.local grafana.app.local prometheus.app.local mailpit.app.local
    ```
    - (OPTIONAL) need a flush of DNS cache as in assignment 2:
    ```bash
