@@ -21,6 +21,9 @@ spec:
         image: ghcr.io/remla25-team20/model-service:{{  .Values.modelService.version  }}
         ports:
         - containerPort: {{ .Values.modelService.port }}
+        env:
+        - name: MODEL_SERVICE_VERSION
+          value: "{{ .Values.modelService.version }}"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -44,6 +47,9 @@ spec:
         image: ghcr.io/remla25-team20/model-service:{{  .Values.modelService.versionCanary  }}
         ports:
         - containerPort: {{ .Values.modelService.port }}
+        env:
+        - name: MODEL_SERVICE_VERSION
+          value: "{{ .Values.modelService.versionCanary }}"
 ---
 apiVersion: apps/v1
 kind: Deployment
