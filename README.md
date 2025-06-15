@@ -146,15 +146,6 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
    | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
    | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
 
-
-### Quick links
-
-| Component | URL | Default credentials |
-|-----------|-----|---------------------|
-| **Grafana** | <http://grafana.app.local> | `admin / prom-operator` |
-| **Prometheus** | <http://prometheus.app.local> | – |
-| **Front-end** | <http://app.local> | – |
-
 ## 🧭 Repository Overview
 
 | Component            | Description                                           |
