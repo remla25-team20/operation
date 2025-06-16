@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   app:
-    image: "ghcr.io/remla25-team20/app:0.4.1"
+    # image: "ghcr.io/remla25-team20/app:0.4.1"
+    image: "app:1"
     ports:
       - "3000:3000"
     environment:
@@ -13,6 +14,12 @@ services:
       - API_BASE_URL=http://model-service:8080
 
   model-service:
-    image: "ghcr.io/remla25-team20/model-service:0.1.6"
+    # image: "ghcr.io/remla25-team20/model-service:0.1.6"
+    image: "model-service:1"
     environment:
       - MODEL_SERVICE_VERSION=0.1.6
+    volumes:
+      - user-feedback-data:/app/user-feedback-data
+
+volumes:
+  user-feedback-data:

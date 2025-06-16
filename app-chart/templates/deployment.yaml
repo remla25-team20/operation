@@ -24,6 +24,14 @@ spec:
         env:
         - name: MODEL_SERVICE_VERSION
           value: "{{ .Values.modelService.version }}"
+        volumeMounts:
+            - name: user-feedback-data
+              mountPath: /app/user-feedback-data
+      volumes:
+        - name: user-feedback-data
+          hostPath:
+            path: "{{ .Values.modelService.userFeedbackData.hostPath }}"
+            type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -50,6 +58,14 @@ spec:
         env:
         - name: MODEL_SERVICE_VERSION
           value: "{{ .Values.modelService.versionCanary }}"
+        volumeMounts:
+            - name: user-feedback-data
+              mountPath: /app/user-feedback-data
+      volumes:
+        - name: user-feedback-data
+          hostPath:
+            path: "{{ .Values.modelService.userFeedbackData.hostPath }}"
+            type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
 kind: Deployment
