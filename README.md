@@ -90,11 +90,12 @@ Deploying our own application to kubernetes and monitoring
 
    ```bash
    # From the repo root
-   chmod +x add_ingress_hosts.sh     # make it executable – run once
-   sudo ./add_ingress_hosts.sh [IP]  # If no IP is given, default to 192.168.56.90
+   chmod +x ./scripts/add_ingress_hosts.sh     # make it executable – run once
+   sudo ./scripts/add_ingress_hosts.sh [IP] [IP_ISTIO]  # If no IP is given, default to 192.168.56.90 - IP_ISTIO defaults to an increment of IP.
    # writes/updates the hosts block
    ```
    The script is **idempotent**: It will clean itself upon re-run.
+   ⚠️  _this script does **not** alter existing host entries with identical names!_
 
    **Option B – manual edit**
       Added the following to your `/etc/hosts`.
