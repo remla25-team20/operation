@@ -128,12 +128,14 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: 0.1.100
-  versionCanary: 0.1.100
+  version: 0.1.101
+  versionCanary: 0.1.101
   port: 8080
   volumes:
   userFeedbackData:
-    hostPath: "/mnt/user-feedback-data"
+    hostPath: "/mnt/shared/user-feedback-data"
+  models:
+    hostPath: "/mnt/shared/models/"
 
 app:
   version: 0.4.100

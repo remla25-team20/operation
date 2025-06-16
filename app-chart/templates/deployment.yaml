@@ -25,12 +25,18 @@ spec:
         - name: MODEL_SERVICE_VERSION
           value: "{{ .Values.modelService.version }}"
         volumeMounts:
-            - name: user-feedback-data
-              mountPath: /app/user-feedback-data
+            - name: user-feedback-data-volume
+              mountPath: /mnt/shared/user-feedback-data
+            - name: models-volume
+              mountPath: /mnt/shared/models/
       volumes:
-        - name: user-feedback-data
+        - name: user-feedback-data-volume
           hostPath:
             path: "{{ .Values.modelService.userFeedbackData.hostPath }}"
+            type: DirectoryOrCreate
+        - name: models-volume
+          hostPath:
+            path: "{{ .Values.modelService.models.hostPath }}"
             type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
@@ -59,12 +65,18 @@ spec:
         - name: MODEL_SERVICE_VERSION
           value: "{{ .Values.modelService.versionCanary }}"
         volumeMounts:
-            - name: user-feedback-data
-              mountPath: /app/user-feedback-data
+            - name: user-feedback-data-volume
+              mountPath: /mnt/shared/user-feedback-data
+            - name: models-volume
+              mountPath: /mnt/shared/models/
       volumes:
-        - name: user-feedback-data
+        - name: user-feedback-data-volume
           hostPath:
             path: "{{ .Values.modelService.userFeedbackData.hostPath }}"
+            type: DirectoryOrCreate
+        - name: models-volume
+          hostPath:
+            path: "{{ .Values.modelService.models.hostPath }}"
             type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
