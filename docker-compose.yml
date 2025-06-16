@@ -19,7 +19,9 @@ services:
     environment:
       - MODEL_SERVICE_VERSION=0.1.6
     volumes:
-      - user-feedback-data:/app/user-feedback-data
+      - user-feedback-data:/mnt/shared/user-feedback-data
+      - models-dir:/mnt/shared/models/
 
 volumes:
   user-feedback-data:
+  models-dir:
