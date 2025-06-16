@@ -75,11 +75,32 @@ Deploying our own application to kubernetes and monitoring
    ```
 
    
-
 3. **Application connect**
-   - The application will be available via the ingress-nginx-controller on [http://app.local](http://app.local) when you have added the following to your `/etc/hosts`.
+
+   The application (and its dashboards) are reachable once the four host-names below resolve to the MetalLB IP **192.168.56.90**:
+
+   | Component | Host-name |
+   |-----------|-----------|
+   | Front-end / API | `app.local` |
+   | Grafana | `grafana.app.local` |
+   | Prometheus | `prometheus.app.local` |
+   | Mailpit | `mailpit.app.local` |
+
+   **Quick option A – one-liner script (recommended)**
+
    ```bash
-   192.168.56.90  app.local
+   # From the repo root
+   chmod +x ./scripts/add_ingress_hosts.sh     # make it executable – run once
+   sudo ./scripts/add_ingress_hosts.sh [IP] [IP_ISTIO]  # If no IP is given, default to 192.168.56.90 - IP_ISTIO defaults to an increment of IP.
+   # writes/updates the hosts block
+   ```
+   The script is **idempotent**: It will clean itself upon re-run.
+   ⚠️  _this script does **not** alter existing host entries with identical names!_
+
+   **Option B – manual edit**
+      Added the following to your `/etc/hosts`.
+   ```bash
+      192.168.56.90 app.local grafana.app.local prometheus.app.local mailpit.app.local
    ```
    - (OPTIONAL) need a flush of DNS cache as in assignment 2:
    ```bash
@@ -125,15 +146,6 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
    | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
    | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
    | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
-
-
-### Quick links
-
-| Component | URL | Default credentials |
-|-----------|-----|---------------------|
-| **Grafana** | <http://grafana.app.local> | `admin / prom-operator` |
-| **Prometheus** | <http://prometheus.app.local> | – |
-| **Front-end** | <http://app.local> | – |
 
 ## 🧭 Repository Overview
 
