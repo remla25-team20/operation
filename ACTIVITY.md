@@ -169,8 +169,9 @@ Approved PR: https://github.com/remla25-team20/model-service/pull/11/files
 # Week 8
 
 -- Jeroen --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/app/pull/9 (Related to A1)
+Created PR: https://github.com/remla25-team20/operation/pull/50 (Related to A1)
+Approved PR: https://github.com/remla25-team20/model-service/pull/13
 
 -- Adrian --
 Created PR:
