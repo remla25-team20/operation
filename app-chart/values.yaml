@@ -128,13 +128,18 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: 0.1.6 # this version has the most recent metrics
-  versionCanary: 0.1.6 # for stopwords bug fix since 0.1.6
+  version: 0.1.101
+  versionCanary: 0.1.101
   port: 8080
+  volumes:
+  userFeedbackData:
+    hostPath: "/mnt/shared/user-feedback-data"
+  models:
+    hostPath: "/mnt/shared/models/"
 
 app:
-  version: 0.3.8
-  versionCanary: 0.4.1
+  version: 0.4.100
+  versionCanary: 0.4.100
 
 serviceMonitor:
   enabled: true          
