@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 29,
+  "id": 33,
   "links": [],
   "panels": [
     {
@@ -415,8 +415,10 @@
       "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
-          "expr": "rate(prediction_error_total[1m])",
-          "legendFormat": "error",
+          "editorMode": "code",
+          "expr": "sum by(model_service_version)(rate(prediction_error_total[1m]))",
+          "legendFormat": "{{model_service_version}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -442,5 +444,5 @@
   "timezone": "",
   "title": "Model Dashboard",
   "uid": "model-service",
-  "version": 5
+  "version": 1
 }
