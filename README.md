@@ -132,20 +132,19 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
    |-----|--------------|------------------|
    | <http://grafana.app.local> | `admin` | `prom-operator` |
 
-   **Add the dashboard**
-   ```bash
-   # Grafana UI → Dashboards → Import → Upload
-   file: grafana/model-dashboard.json  (in this repo)
+   
+   The dashboard is automatically installed into grafana under the name **Model Dashboard**
+
    ```
    The dashboard shows:
 
-   | Panel        | Metric                                                                                                   | Prometheus type |
-   |--------------|-----------------------------------------------------------------------------------------------------------|-----------------|
-   | CPU Usage    | `model_cpu_percent`                                                                                       | Gauge           |
-   | Memory RSS   | `model_memory_rss_bytes`                                                                                  | Gauge           |
-   | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
-   | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
-   | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
+   | Panel        | Metric                                                                                                          | Prometheus type |
+   |--------------|-----------------------------------------------------------------------------------------------------------------|-----------------|
+   | CPU Usage    | `sum(model_cpu_percent)`                                                                                        | Gauge           |
+   | Memory RSS   | `sum(model_memory_rss_bytes)`                                                                                   | Gauge           |
+   | p95 Latency  | `histogram_quantile(0.95, sum by(le, model_service_version)(rate(request_latency_seconds_bucket[5m])))`         | Histogram       |
+   | Success /s   | `sum by(model_service_version)(rate(prediction_success_total[1m]))`                                             | Counter         |
+   | Error /s     | `sum by(model_service_version)(rate(prediction_error_total[1m]))`                                               | Counter         |
 
 ## 🧭 Repository Overview
 
