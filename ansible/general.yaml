@@ -71,6 +71,11 @@
         - kubelet={{ k8s_version }}
         - kubeadm={{ k8s_version }}
         - kubectl={{ k8s_version }}
+        - python3-pip=24.0+dfsg-1ubuntu1.1   
+    - name: Install Kubernetes package for Python
+      pip:
+        name: ["kubernetes"]
+        break_system_packages: true
     - name: Create containerd folder
       ansible.builtin.file:
         path: /etc/containerd
