@@ -179,7 +179,7 @@ Approved PR:
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/operation/pull/56 (A3)
-Approved PR:
+Approved PR: https://github.com/remla25-team20/operation/pull/48 (A3)
 
 -- Yiming --
 Created PR: https://github.com/remla25-team20/operation/pull/51 (A2)
