@@ -201,7 +201,7 @@ This organization is structured into multiple public repositories:
 | Kubernetes Usage    | **Good**   | Dedicated `app` namespace created via `--create-namespace`; Helm values parametrize image, port, etc. |
 | Helm Installation   | **Good**   | `helm upgrade --install`, separate `monitoring` release, configurable `ServiceMonitor` label.  |
 | App Monitoring      | **Good**   | Five custom metrics: 3 × Counter, 2 × Gauge, 1 × Histogram; exposed via `ServiceMonitor`.      |
-| Grafana Dashboard   | **Sufficient** | Five-panel dashboard imported manually; JSON stored in repo (`grafana/model-dashboard.json`).   |
+| Grafana Dashboard   | **Excellent** | Five-panel dashboard automatically installed as Model Dashboard.   |
 
 - ✅ **Converted app deployment to Helm chart**: Parameterized model service port, service names, and image versions.
 - ✅ **Deployed application via Helm**: Application and model-service deployed using Helm on self-provisioned Kubernetes cluster.
