@@ -49,10 +49,8 @@ To support the decision process a gauge type grafana visualization will be used 
 ![Grafana Dashboard Screenshot](./images/experiment-dashboard-total-reviews.png)
 
 ## Notes
-> The "review submission rate" gauge dashboard can be imported to Grafana from grafana/grafana-experiment.json
+> The dashboard can be imported to Grafana from grafana/grafana-experiment.json
 
-> The "total reviews started" bar gauge can be imported from grafana/grafana-experiment-total-reviews.json
- 
 > Because sticky session is implemented, if you want to test both versions, you would have to delete the "version" cookie before reloading the page.
 Also, adjust the ratio between stable/experimental version in istio to increase your chance of hitting the experimental green button (canary) version of the app.
 
