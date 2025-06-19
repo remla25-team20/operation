@@ -1,0 +1,159 @@
+{
+  "id": 1,
+  "type": "gauge",
+  "title": "Review Submission Rate",
+  "description": "Review Submission Rate: Blue vs Green button",
+  "gridPos": {
+    "x": 0,
+    "y": 8,
+    "h": 9,
+    "w": 11
+  },
+  "fieldConfig": {
+    "defaults": {
+      "mappings": [],
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "value": null,
+            "color": "green"
+          },
+          {
+            "value": 80,
+            "color": "red"
+          }
+        ]
+      },
+      "color": {
+        "mode": "thresholds"
+      },
+      "min": 0,
+      "max": 1,
+      "unit": "percentunit"
+    },
+    "overrides": []
+  },
+  "pluginVersion": "12.0.1",
+  "targets": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "disableTextWrap": false,
+      "editorMode": "code",
+      "expr": "sum (reviews_started_total{app_version=\"0.4.100\"}) ",
+      "format": "time_series",
+      "fullMetaSearch": false,
+      "includeNullMetadata": true,
+      "instant": true,
+      "legendFormat": "Green Button: Reviews started",
+      "range": true,
+      "refId": "A",
+      "useBackend": false,
+      "hide": true
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "editorMode": "code",
+      "expr": "sum (reviews_started_total{app_version=\"0.4.5678\"}) ",
+      "hide": true,
+      "instant": true,
+      "legendFormat": "Blue Button: Reviews started",
+      "range": true,
+      "refId": "B"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "disableTextWrap": false,
+      "editorMode": "code",
+      "expr": "sum (submit_click_total{app_version=\"0.4.100\"}) ",
+      "fullMetaSearch": false,
+      "hide": true,
+      "includeNullMetadata": true,
+      "instant": false,
+      "legendFormat": "Blue Button: Submit clicked",
+      "range": true,
+      "refId": "D",
+      "useBackend": false
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "editorMode": "code",
+      "expr": "sum (submit_click_total{app_version=\"0.4.5678\"}) ",
+      "hide": true,
+      "instant": false,
+      "legendFormat": "Green Button: Submit clicked",
+      "range": true,
+      "refId": "E"
+    },
+    {
+      "refId": "C",
+      "expr": "sum(submit_click_total{app_version=\"0.4.100\"}) \n/\nsum(reviews_started_total{app_version=\"0.4.100\"})",
+      "range": true,
+      "instant": false,
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "hide": false,
+      "editorMode": "code",
+      "legendFormat": "Blue-button"
+    },
+    {
+      "refId": "F",
+      "expr": "sum(submit_click_total{app_version=\"0.4.5678\"}) \n/\nsum(reviews_started_total{app_version=\"0.4.5678\"})",
+      "range": true,
+      "instant": false,
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "hide": false,
+      "editorMode": "code",
+      "legendFormat": "Green-button"
+    },
+    {
+      "refId": "G",
+      "expr": "",
+      "range": true,
+      "instant": false,
+      "datasource": {
+        "uid": "prometheus",
+        "type": "prometheus"
+      },
+      "hide": false,
+      "editorMode": "code",
+      "legendFormat": "__auto"
+    }
+  ],
+  "datasource": {
+    "type": "prometheus",
+    "uid": "prometheus"
+  },
+  "options": {
+    "reduceOptions": {
+      "values": false,
+      "calcs": [
+        "lastNotNull"
+      ],
+      "fields": ""
+    },
+    "orientation": "auto",
+    "showThresholdLabels": false,
+    "showThresholdMarkers": true,
+    "sizing": "auto",
+    "minVizWidth": 75,
+    "minVizHeight": 75
+  }
+}

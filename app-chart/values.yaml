@@ -139,7 +139,7 @@ modelService:
 
 app:
   version: 0.4.100
-  versionCanary: 0.4.100
+  versionCanary: 0.4.5678
 
 serviceMonitor:
   enabled: true          
