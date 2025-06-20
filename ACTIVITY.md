@@ -208,8 +208,8 @@ Created PR:
 Approved PR:
 
 -- Dirk --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/58 (A2)
+Approved PR: https://github.com/remla25-team20/app/pull/9
 
 # Week 10
 
