@@ -200,8 +200,10 @@ Created PR:
 Approved PR:
 
 -- Nathan --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/56 (A3)
+Created PR: https://github.com/remla25-team20/model-training/pull/11 (A4)
+Approved PR: https://github.com/remla25-team20/operation/pull/48 (A3)
+Approved PR: https://github.com/remla25-team20/operation/pull/57 (A5)
 
 -- Yiming --
 Created PR:

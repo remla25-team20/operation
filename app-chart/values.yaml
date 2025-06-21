@@ -145,5 +145,14 @@ serviceMonitor:
   enabled: true          
   release: monitoring
 
+grafana:
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+      labels: grafana_dashboard
+      labelValue: "1"
+  dashboardFile: "grafana/model-dashboard.json"
+
 rateLimit:
   enabled: true

@@ -132,20 +132,19 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
    |-----|--------------|------------------|
    | <http://grafana.app.local> | `admin` | `prom-operator` |
 
-   **Add the dashboard**
-   ```bash
-   # Grafana UI → Dashboards → Import → Upload
-   file: grafana/model-dashboard.json  (in this repo)
+   
+   The dashboard is automatically installed into grafana under the name **Model Dashboard**
+
    ```
    The dashboard shows:
 
-   | Panel        | Metric                                                                                                   | Prometheus type |
-   |--------------|-----------------------------------------------------------------------------------------------------------|-----------------|
-   | CPU Usage    | `model_cpu_percent`                                                                                       | Gauge           |
-   | Memory RSS   | `model_memory_rss_bytes`                                                                                  | Gauge           |
-   | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
-   | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
-   | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
+   | Panel        | Metric                                                                                                          | Prometheus type |
+   |--------------|-----------------------------------------------------------------------------------------------------------------|-----------------|
+   | CPU Usage    | `sum(model_cpu_percent)`                                                                                        | Gauge           |
+   | Memory RSS   | `sum(model_memory_rss_bytes)`                                                                                   | Gauge           |
+   | p95 Latency  | `histogram_quantile(0.95, sum by(le, model_service_version)(rate(request_latency_seconds_bucket[5m])))`         | Histogram       |
+   | Success /s   | `sum by(model_service_version)(rate(prediction_success_total[1m]))`                                             | Counter         |
+   | Error /s     | `sum by(model_service_version)(rate(prediction_error_total[1m]))`                                               | Counter         |
 
 ## 🧭 Repository Overview
 
@@ -202,7 +201,7 @@ This organization is structured into multiple public repositories:
 | Kubernetes Usage    | **Good**   | Dedicated `app` namespace created via `--create-namespace`; Helm values parametrize image, port, etc. |
 | Helm Installation   | **Good**   | `helm upgrade --install`, separate `monitoring` release, configurable `ServiceMonitor` label.  |
 | App Monitoring      | **Good**   | Five custom metrics: 3 × Counter, 2 × Gauge, 1 × Histogram; exposed via `ServiceMonitor`.      |
-| Grafana Dashboard   | **Sufficient** | Five-panel dashboard imported manually; JSON stored in repo (`grafana/model-dashboard.json`).   |
+| Grafana Dashboard   | **Excellent** | Five-panel dashboard automatically installed as Model Dashboard.   |
 
 - ✅ **Converted app deployment to Helm chart**: Parameterized model service port, service names, and image versions.
 - ✅ **Deployed application via Helm**: Application and model-service deployed using Helm on self-provisioned Kubernetes cluster.
