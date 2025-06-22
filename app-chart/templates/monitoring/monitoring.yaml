@@ -8,6 +8,8 @@ metadata:
     app: model-service
     release: monitoring  # Match Prometheus CRD label for discovery
 spec:
+  namespaceSelector:
+      any: true # Monitor all namespaces; otherwise this can't see
   selector:
     matchLabels:
       app: model-service  # Match the Service labels in deployment.yml
@@ -27,16 +29,19 @@ spec:
   groups:
   - name: model-service.rules
     rules:
-      - alert: HighModelRequestLatency
-        expr: histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m])) > 1
-        for: 2m
+      - alert: TooManySubmits
+      # sum across label dimensions; adjust threshold to suit
+        expr: sum without(app_version, model_service_version) (increase(submit_click_total[30s])) > 5
+        for: 0m                    # fire immediately (no extra wait)
         labels:
           severity: warning
-          namespace: monitoring # must have, 2 hr debugging
+          namespace: monitoring
         annotations:
-          summary: "High 95th percentile latency"
-          description: "p95 request latency > 1s for over 2m."
+          summary: "Too many submit clicks"
+          description: |
+            More than 5 submit-button clicks in the last 30 seconds.
       - alert: HighModelErrorRate
+      # calculate the error rate as a ratio of errors to total requests
         expr: |
           rate(prediction_error_total[5m])
           / (rate(prediction_success_total[5m]) + rate(prediction_error_total[5m])) > 0.1
@@ -58,6 +63,10 @@ metadata:
 spec:
   route:
     receiver: email-notifications
+    groupBy: ['alertname']   
+    groupWait: 0s            # send the first message immediately
+    groupInterval: 30s       # reopen the group every 30 s
+    repeatInterval: 30s      # resend while *firing* every 30 s
   receivers:
     - name: email-notifications
       emailConfigs:
