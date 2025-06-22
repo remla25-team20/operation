@@ -148,7 +148,7 @@ Deploying our own application to kubernetes and monitoring
    ```  
    ##### Alerting Rules for Excellence
    We include two production-grade alert rules to monitor `model-service`
-   - **HighModelRequestLatency**: fires if the 95th-percentile request latency exceeds 1 s for more than 2 minutes (severity: warning).  
+   - **TooManySubmit**: fires if the there is more than 5 submits within the 30s interval.This is easy to trigger and thus (serverity: warning).
    - **HighModelErrorRate**: fires if the prediction error rate exceeds 10 % over a 5-minute window (severity: critical).
 
    All alert notifications (including the synthetic TestEmail alert) are routed to Mailpit rather than real email addresses. You can view them in the Mailpit UI at <http://mailpit.app.local>.
