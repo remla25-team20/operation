@@ -24,6 +24,11 @@ spec:
         env:
         - name: MODEL_SERVICE_VERSION
           value: "{{ .Values.modelService.version }}"
+        - name: GITHUB_PAT
+          valueFrom:
+            secretKeyRef:
+              name: github-pat
+              key: github-pat
         volumeMounts:
             - name: user-feedback-data-volume
               mountPath: /mnt/shared/user-feedback-data
@@ -64,6 +69,11 @@ spec:
         env:
         - name: MODEL_SERVICE_VERSION
           value: "{{ .Values.modelService.versionCanary }}"
+        - name: GITHUB_PAT
+          valueFrom:
+            secretKeyRef:
+              name: github-pat
+              key: github-pat
         volumeMounts:
             - name: user-feedback-data-volume
               mountPath: /mnt/shared/user-feedback-data
@@ -96,6 +106,8 @@ spec:
         app: app
         version: "{{ .Values.app.version }}"
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
       - name: app
         image: "ghcr.io/remla25-team20/app:{{ .Values.app.version  }}"
@@ -112,6 +124,14 @@ spec:
           value: "http://{{ .Values.modelService.name  }}:{{  .Values.modelService.port  }}"
         - name: APP_VERSION
           value: "{{ .Values.app.version }}"
+        volumeMounts:
+        - name: models-volume
+          mountPath: /mnt/shared/models/
+      volumes:
+        - name: models-volume
+          hostPath:
+            path: "{{ .Values.modelService.models.hostPath }}"
+            type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -130,6 +150,8 @@ spec:
         app: app
         version: "{{ .Values.app.versionCanary }}"
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
       - name: app
         image: "ghcr.io/remla25-team20/app:{{ .Values.app.versionCanary  }}"
@@ -146,6 +168,14 @@ spec:
           value: "http://{{ .Values.modelService.name  }}:{{  .Values.modelService.port  }}"
         - name: APP_VERSION
           value: "{{ .Values.app.versionCanary }}"
+        volumeMounts:
+        - name: models-volume
+          mountPath: /mnt/shared/models/
+      volumes:
+        - name: models-volume
+          hostPath:
+            path: "{{ .Values.modelService.models.hostPath }}"
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service

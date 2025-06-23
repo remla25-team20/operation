@@ -3,3 +3,4 @@
 kubeconfig
 shared/*
 !shared/.keep
+*github-pat.yaml
