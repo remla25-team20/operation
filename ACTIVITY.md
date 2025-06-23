@@ -197,8 +197,9 @@ Created PR:
 Approved PR:
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/53 (A3)
+Created PR: https://github.com/remla25-team20/operation/pull/57 (A5)
+Approved PR: https://github.com/remla25-team20/operation/pull/56 (A3)
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/operation/pull/56 (A3)
