@@ -24,7 +24,17 @@ Run the system locally using Docker Compose.
    ```bash
    echo <YOUR_GH_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
    ```
-3. **Start the system**:
+3. **Define the .env file**
+
+   - Docker pulls the app and model-service versions defined through environment variables from the .env file.
+   - Since, .env is not part of the repo, you need to manually create it the root directory of the project
+   - Below is an example of a valid .env:
+
+   APP_VERSION=0.4.1
+   APP_PORT=3000
+   MODEL_SERVICE_VERSION=0.1.6
+
+4. **Start the system**:
    ```bash
    docker-compose up
    ```
@@ -74,17 +84,16 @@ Deploying our own application to kubernetes and monitoring
    KUBECONFIG=kubeconfig helm install app ./app-chart/
    ```
 
-   
 3. **Application connect**
 
    The application (and its dashboards) are reachable once the four host-names below resolve to the MetalLB IP **192.168.56.90**:
 
-   | Component | Host-name |
-   |-----------|-----------|
-   | Front-end / API | `app.local` |
-   | Grafana | `grafana.app.local` |
-   | Prometheus | `prometheus.app.local` |
-   | Mailpit | `mailpit.app.local` |
+   | Component       | Host-name              |
+   | --------------- | ---------------------- |
+   | Front-end / API | `app.local`            |
+   | Grafana         | `grafana.app.local`    |
+   | Prometheus      | `prometheus.app.local` |
+   | Mailpit         | `mailpit.app.local`    |
 
    **Quick option A – one-liner script (recommended)**
 
@@ -94,21 +103,27 @@ Deploying our own application to kubernetes and monitoring
    sudo ./scripts/add_ingress_hosts.sh [IP] [IP_ISTIO]  # If no IP is given, default to 192.168.56.90 - IP_ISTIO defaults to an increment of IP.
    # writes/updates the hosts block
    ```
+
    The script is **idempotent**: It will clean itself upon re-run.
-   ⚠️  _this script does **not** alter existing host entries with identical names!_
+   ⚠️ _this script does **not** alter existing host entries with identical names!_
 
    **Option B – manual edit**
-      Added the following to your `/etc/hosts`.
+   Added the following to your `/etc/hosts`.
+
    ```bash
       192.168.56.90 app.local grafana.app.local prometheus.app.local mailpit.app.local
    ```
+
    - (OPTIONAL) need a flush of DNS cache as in assignment 2:
+
    ```bash
    sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder # MacOS
    sudo systemd-resolve --flush-caches # Linux/systemd
    ipconfig /flushdns # Windows
    ```
+
    - (POSSIBLE PROBLEM) The ingress-nginx-controller should have external IP 192.168.56.90 by default, but if it is not working please check on which IP the ingress-nginx-controller is exposed with the following command and edit your `/etc/hosts` accordingly.
+
    ```bash
    # Again KUBECONFIG only needed if you haven\'t added it to your global config
    KUBECONFIG=kubeconfig kubectl get svc -n ingress-nginx
@@ -116,36 +131,39 @@ Deploying our own application to kubernetes and monitoring
 
 4. **Install Monitoring via Ansible**
 
-Monitoring (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
+Monitoring (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.
 
 Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
 
 ```bash
 192.168.56.90 grafana.app.local prometheus.app.local
 
-   ```
+```
+
 5. **View & configure monitoring dashboards**
-   Once the `monitoring` Helm release is **`STATUS: deployed`** it can take 15-30 s before Prometheus finishes its first scrape of *model-service*.  
-   During that time Grafana panels may still read “No data” – just refresh once the target turns **UP** (Prometheus → *Status ▸ Targets*).
+   Once the `monitoring` Helm release is **`STATUS: deployed`** it can take 15-30 s before Prometheus finishes its first scrape of _model-service_.  
+   During that time Grafana panels may still read “No data” – just refresh once the target turns **UP** (Prometheus → _Status ▸ Targets_).
    **Log in to Grafana**
    | URL | Default user | Default password |
    |-----|--------------|------------------|
    | <http://grafana.app.local> | `admin` | `prom-operator` |
 
    **Add the dashboard**
+
    ```bash
    # Grafana UI → Dashboards → Import → Upload
    file: grafana/model-dashboard.json  (in this repo)
    ```
+
    The dashboard shows:
 
-   | Panel        | Metric                                                                                                   | Prometheus type |
-   |--------------|-----------------------------------------------------------------------------------------------------------|-----------------|
-   | CPU Usage    | `model_cpu_percent`                                                                                       | Gauge           |
-   | Memory RSS   | `model_memory_rss_bytes`                                                                                  | Gauge           |
-   | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
-   | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
-   | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
+   | Panel       | Metric                                                               | Prometheus type |
+   | ----------- | -------------------------------------------------------------------- | --------------- |
+   | CPU Usage   | `model_cpu_percent`                                                  | Gauge           |
+   | Memory RSS  | `model_memory_rss_bytes`                                             | Gauge           |
+   | p95 Latency | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))` | Histogram       |
+   | Success /s  | `rate(prediction_success_total[1m])`                                 | Counter         |
+   | Error /s    | `rate(prediction_error_total[1m])`                                   | Counter         |
 
 ## 🧭 Repository Overview
 
@@ -197,12 +215,12 @@ This organization is structured into multiple public repositories:
 
 #### Targeted Rating
 
-| Category            | Rating     | Notes                                                                                          |
-|---------------------|------------|------------------------------------------------------------------------------------------------|
-| Kubernetes Usage    | **Good**   | Dedicated `app` namespace created via `--create-namespace`; Helm values parametrize image, port, etc. |
-| Helm Installation   | **Good**   | `helm upgrade --install`, separate `monitoring` release, configurable `ServiceMonitor` label.  |
-| App Monitoring      | **Good**   | Five custom metrics: 3 × Counter, 2 × Gauge, 1 × Histogram; exposed via `ServiceMonitor`.      |
-| Grafana Dashboard   | **Sufficient** | Five-panel dashboard imported manually; JSON stored in repo (`grafana/model-dashboard.json`).   |
+| Category          | Rating         | Notes                                                                                                 |
+| ----------------- | -------------- | ----------------------------------------------------------------------------------------------------- |
+| Kubernetes Usage  | **Good**       | Dedicated `app` namespace created via `--create-namespace`; Helm values parametrize image, port, etc. |
+| Helm Installation | **Good**       | `helm upgrade --install`, separate `monitoring` release, configurable `ServiceMonitor` label.         |
+| App Monitoring    | **Good**       | Five custom metrics: 3 × Counter, 2 × Gauge, 1 × Histogram; exposed via `ServiceMonitor`.             |
+| Grafana Dashboard | **Sufficient** | Five-panel dashboard imported manually; JSON stored in repo (`grafana/model-dashboard.json`).         |
 
 - ✅ **Converted app deployment to Helm chart**: Parameterized model service port, service names, and image versions.
 - ✅ **Deployed application via Helm**: Application and model-service deployed using Helm on self-provisioned Kubernetes cluster.
@@ -212,25 +230,26 @@ This organization is structured into multiple public repositories:
 - ✅ **Grafana dashboard setup**: Manually imported JSON dashboard visualizes metrics using counters, gauges, and histogram functions.
 - 🛠 **Working on alerting**: Preparing PrometheusRule and AlertManager integration to support automatic notifications.
 
-
 ### Assignment 4 – ML Configuration Management & ML Testing
 
 #### Targeted Rating
-| Category            | Rating     | Notes                                                                                          |
-|---------------------|------------|------------------------------------------------------------------------------------------------|
-| Automated Tests    | **Poor/Sufficient**   | Automated tests included, following ML Test Score methodology but not yet covering sufficient categories. Coverage is already automatically measured. |
-| Continuous Training   | **Excellent**   | Workflows in model-training automatically conduct tests and generate badges. |
-| Project Organization      | **Excellent**   |   All elements achieved.   |
-| Pipeline Management with DVC | **Excellent** | DVC pipeline is setup with Google Drive |
-| Code Quality   | **Excellent** | PyLint and Flake8 are configured with a custom rule for detecting hard-coded variables.   |
+
+| Category                     | Rating              | Notes                                                                                                                                                 |
+| ---------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Automated Tests              | **Poor/Sufficient** | Automated tests included, following ML Test Score methodology but not yet covering sufficient categories. Coverage is already automatically measured. |
+| Continuous Training          | **Excellent**       | Workflows in model-training automatically conduct tests and generate badges.                                                                          |
+| Project Organization         | **Excellent**       | All elements achieved.                                                                                                                                |
+| Pipeline Management with DVC | **Excellent**       | DVC pipeline is setup with Google Drive                                                                                                               |
+| Code Quality                 | **Excellent**       | PyLint and Flake8 are configured with a custom rule for detecting hard-coded variables.                                                               |
 
 ### Assignment 5 - Istio Service Mesh
 
 #### Targeted Rating
-| Category            | Rating     | Notes                                                                                          |
-|---------------------|------------|------------------------------------------------------------------------------------------------|
-| Traffic Management  | **Excellent**   | Version-Consistent 90/10 routing, Sticky Sessions implemented   |
-| Additional Use Case   | **Sufficient**   | Baseline rate limiting implemented but issues still persist. |
-| Continuous Experimentation     | **Good**   |   Button color experiment is implemented and relevant metrics are measured.  |
-| Deployment Documentation | **Good / Excellent** | Deployment.md made to the best of current insight. |
-| Extension Proposal   | **Insufficient** | Not implemented for this deadline due to time constraints.   |
+
+| Category                   | Rating               | Notes                                                                     |
+| -------------------------- | -------------------- | ------------------------------------------------------------------------- |
+| Traffic Management         | **Excellent**        | Version-Consistent 90/10 routing, Sticky Sessions implemented             |
+| Additional Use Case        | **Sufficient**       | Baseline rate limiting implemented but issues still persist.              |
+| Continuous Experimentation | **Good**             | Button color experiment is implemented and relevant metrics are measured. |
+| Deployment Documentation   | **Good / Excellent** | Deployment.md made to the best of current insight.                        |
+| Extension Proposal         | **Insufficient**     | Not implemented for this deadline due to time constraints.                |
