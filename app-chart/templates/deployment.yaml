@@ -106,8 +106,6 @@ spec:
         app: app
         version: "{{ .Values.app.version }}"
     spec:
-      securityContext:
-        fsGroup: 1000
       containers:
       - name: app
         image: "ghcr.io/remla25-team20/app:{{ .Values.app.version  }}"
@@ -150,8 +148,6 @@ spec:
         app: app
         version: "{{ .Values.app.versionCanary }}"
     spec:
-      securityContext:
-        fsGroup: 1000
       containers:
       - name: app
         image: "ghcr.io/remla25-team20/app:{{ .Values.app.versionCanary  }}"

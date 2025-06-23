@@ -128,8 +128,8 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: 0.2.2
-  versionCanary: 0.2.2
+  version: 0.2.4
+  versionCanary: 0.2.4
   port: 8080
   volumes:
   userFeedbackData:
@@ -138,8 +138,8 @@ modelService:
     hostPath: "/mnt/shared/models/"
 
 app:
-  version: 1.0.2-feature-model-dropdown.2
-  versionCanary: 1.0.2-feature-model-dropdown.2
+  version: 1.0.2-feature-model-dropdown.4
+  versionCanary: 1.0.2-feature-model-dropdown.4
 
 serviceMonitor:
   enabled: true          
