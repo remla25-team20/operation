@@ -174,8 +174,9 @@ Created PR: https://github.com/remla25-team20/operation/pull/50 (Related to A1)
 Approved PR: https://github.com/remla25-team20/model-service/pull/13
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/model-service/pull/13 (Related to A1)
+Created PR: https://github.com/remla25-team20/app/pull/10 (Related to A1)
+Approved PR: https://github.com/remla25-team20/operation/pull/50 (Related to A1)
 
 -- Nathan --
 Created PR:
@@ -196,8 +197,9 @@ Created PR:
 Approved PR:
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/operation/pull/53 (A3)
+Created PR: https://github.com/remla25-team20/operation/pull/57 (A5)
+Approved PR: https://github.com/remla25-team20/operation/pull/56 (A3)
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/operation/pull/56 (A3)
