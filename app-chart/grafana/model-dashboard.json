@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 33,
+  "id": 39,
   "links": [],
   "panels": [
     {
@@ -73,7 +73,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "editorMode": "code",
@@ -138,7 +138,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "editorMode": "code",
@@ -229,11 +229,11 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "editorMode": "code",
-          "expr": "histogram_quantile(\n  0.95,\n  sum by(le, model_service_version)(rate(request_latency_seconds_bucket[5m]))\n)\n",
+          "expr": "histogram_quantile(\n  0.95,\n  sum by(le, model_service_version)(rate(request_latency_seconds_bucket[$req_latency_timeframe]))\n)\n",
           "legendFormat": "{{model_service_version}}",
           "range": true,
           "refId": "A"
@@ -321,11 +321,11 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by(model_service_version)(rate(prediction_success_total[1m]))",
+          "expr": "sum by(model_service_version)(rate(prediction_success_total[$success_rate_timeframe]))",
           "legendFormat": "{{model_service_version}}",
           "range": true,
           "refId": "A"
@@ -412,11 +412,11 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.0.1+security-01",
+      "pluginVersion": "12.0.1",
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by(model_service_version)(rate(prediction_error_total[1m]))",
+          "expr": "sum by(model_service_version)(rate(prediction_error_total[$error_rate_timeframe]))",
           "legendFormat": "{{model_service_version}}",
           "range": true,
           "refId": "A"
@@ -434,10 +434,152 @@
     "prometheus"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "1m",
+          "value": "1m"
+        },
+        "name": "error_rate_timeframe",
+        "options": [
+          {
+            "selected": false,
+            "text": "30s",
+            "value": "30s"
+          },
+          {
+            "selected": true,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "2h",
+            "value": "2h"
+          }
+        ],
+        "query": "30s,1m,5m,10m,30m,1h,2h",
+        "type": "custom"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "5m",
+          "value": "5m"
+        },
+        "name": "req_latency_timeframe",
+        "options": [
+          {
+            "selected": false,
+            "text": "30s",
+            "value": "30s"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": true,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "2h",
+            "value": "2h"
+          }
+        ],
+        "query": "30s,1m,5m,10m,30m,1h,2h",
+        "type": "custom"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "1m",
+          "value": "1m"
+        },
+        "name": "success_rate_timeframe",
+        "options": [
+          {
+            "selected": false,
+            "text": "30s",
+            "value": "30s"
+          },
+          {
+            "selected": true,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "5m",
+            "value": "5m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "2h",
+            "value": "2h"
+          }
+        ],
+        "query": "30s,1m,5m,10m,30m,1h,2h",
+        "type": "custom"
+      }
+    ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
