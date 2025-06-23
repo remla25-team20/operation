@@ -24,7 +24,15 @@ Run the system locally using Docker Compose.
    ```bash
    echo <YOUR_GH_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
    ```
-3. **Start the system**:
+3. **Define the .env file**
+   - Docker pulls the app and model-service versions defined through environment variables from the .env file.
+   - Since, .env is not part of the repo, you need to manually create it the root directory of the project
+   - Below is an example of a valid .env:
+   
+   APP_VERSION=0.4.1
+   APP_PORT=3000
+   MODEL_SERVICE_VERSION=0.1.6
+4. **Start the system**:
    ```bash
    docker-compose up
    ```
