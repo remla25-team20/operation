@@ -1,28 +1,18 @@
-############################################
-# 1. ConfigMap – rate limit rules
-############################################
+# ---------- 1. Redis Service (in default namespace) -------------------
 apiVersion: v1
-kind: ConfigMap
+kind: Service
 metadata:
-  name: ratelimit-config
+  name: redis
   namespace: default
-data:
-  config.yaml: |
-    domain: ratelimit
-    descriptors:
-      - key: PATH
-        value: "/model-service/predict"
-        rate_limit:
-          unit: minute
-          requests_per_unit: 2
-      - key: PATH
-        rate_limit:
-          unit: minute
-          requests_per_unit: 100
+  labels:
+    app: redis
+spec:
+  ports:
+  - name: redis
+    port: 6379
+  selector:
+    app: redis
 ---
-############################################
-# 2. Redis (store counters for rate-limit)
-############################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,26 +29,43 @@ spec:
         app: redis
     spec:
       containers:
-      - name: redis
-        image: redis:alpine
+      - image: redis:alpine
+        name: redis
         ports:
         - containerPort: 6379
 ---
+# ---------- 2. ConfigMap with Per-IP Rate Limit Rule ------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ratelimit-config
+  namespace: default
+data:
+  config.yml: |
+    domain: user-ratelimit
+    descriptors:
+      - key: remote_address
+        rate_limit:
+          # Modified for easier testing
+          unit: minute
+          requests_per_unit: 5
+---
+# ---------- 3. RateLimit Service (in default namespace) ---------------
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: ratelimit
   namespace: default
+  labels:
+    app: ratelimit
 spec:
-  selector:
-    app: redis
   ports:
-    - port: 6379
-      name: redis
+  - name: grpc-port
+    port: 8081
+    targetPort: 8081
+  selector:
+    app: ratelimit
 ---
-############################################
-# 3. RateLimit service deployment
-############################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -74,87 +81,46 @@ spec:
       labels:
         app: ratelimit
     spec:
+      containers:
+      - image: envoyproxy/ratelimit:master
+        name: ratelimit
+        command: ["/bin/ratelimit"]
+        env:
+        - name: LOG_LEVEL
+          value: debug
+        - name: REDIS_URL
+          # Using short name because both are in the 'default' namespace
+          value: redis:6379
+        - name: RUNTIME_ROOT
+          value: /data
+        - name: RUNTIME_SUBDIRECTORY
+          value: ratelimit
+        - name: REDIS_SOCKET_TYPE
+          value: tcp
+        ports:
+        - containerPort: 8081
+        volumeMounts:
+        - name: config-volume
+          mountPath: /data/ratelimit/config/config.yml
+          subPath: config.yml
       volumes:
       - name: config-volume
         configMap:
           name: ratelimit-config
-      containers:
-      - name: ratelimit
-        image: envoyproxy/ratelimit:30a4ce1a
-        command: ["/bin/ratelimit"]
-        env:
-        - name: REDIS_URL
-          value: "redis://redis.default.svc.cluster.local:6379"
-        - name: REDIS_SOCKET_TYPE
-          value: tcp
-        - name: USE_STATSD
-          value: "false"
-        - name: LOG_LEVEL
-          value: "debug"
-        - name: RUNTIME_ROOT
-          value: "/data"
-        - name: RUNTIME_SUBDIRECTORY
-          value: "ratelimit"
-        ports:
-        - containerPort: 8080  # admin
-        - containerPort: 8081  # gRPC
-        - containerPort: 6070  # debug
-        volumeMounts:
-        - name: config-volume
-          mountPath: /data/ratelimit/config
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ratelimit
-  namespace: default
-spec:
-  selector:
-    app: ratelimit
-  ports:
-    - name: grpc
-      port: 8081
-      targetPort: 8081
-    - name: http
-      port: 8080
-      targetPort: 8080
-    - name: debug
-      port: 6070
-      targetPort: 6070
----
-############################################
-# 4. EnvoyFilter A: Add rate limit filter & cluster
-############################################
+# ---------- 4. The Corrected EnvoyFilter ------------------------------
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: ratelimit-filter
+  # This must be in istio-system to target the gateway
+  name: user-rate-limit-filter
   namespace: istio-system
 spec:
   workloadSelector:
     labels:
-      istio: ingressgateway    # or app: istio-ingressgateway (check your actual labels!)
+      istio: ingressgateway
   configPatches:
-  - applyTo: CLUSTER
-    match:
-      context: GATEWAY
-    patch:
-      operation: ADD
-      value:
-        name: rate_limit_cluster
-        type: STRICT_DNS
-        connect_timeout: 10s
-        lb_policy: ROUND_ROBIN
-        http2_protocol_options: {}
-        load_assignment:
-          cluster_name: rate_limit_cluster
-          endpoints:
-          - lb_endpoints:
-            - endpoint:
-                address:
-                  socket_address:
-                    address: ratelimit.default.svc.cluster.local
-                    port_value: 8081
+  # Patch 1: Inject the HTTP filter
   - applyTo: HTTP_FILTER
     match:
       context: GATEWAY
@@ -162,58 +128,29 @@ spec:
         filterChain:
           filter:
             name: "envoy.filters.network.http_connection_manager"
-            subFilter:
-              name: "envoy.filters.http.router"
     patch:
       operation: INSERT_BEFORE
       value:
         name: envoy.filters.http.ratelimit
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit
-          domain: ratelimit
+          domain: user-ratelimit
           failure_mode_deny: true
-          timeout: 10s
           rate_limit_service:
             grpc_service:
               envoy_grpc:
-                cluster_name: rate_limit_cluster
+                # ADAPTED: Point to the 'ratelimit' service in the 'default' namespace
+                cluster_name: outbound|8081||ratelimit.default.svc.cluster.local
                 authority: ratelimit.default.svc.cluster.local
-              timeout: 10s
             transport_api_version: V3
----
-############################################
-# 5. EnvoyFilter B: Apply rate limit rule to POST /model-service/predict
-############################################
-apiVersion: networking.istio.io/v1alpha3
-kind: EnvoyFilter
-metadata:
-  name: ratelimit-route
-  namespace: istio-system
-spec:
-  workloadSelector:
-    labels:
-      istio: ingressgateway
-  configPatches:
+  # Patch 2: Apply the Per-IP rule to all Virtual Hosts on the gateway
   - applyTo: VIRTUAL_HOST
     match:
       context: GATEWAY
-      routeConfiguration:
-        vhost:
-          name: "*:80"    # Use "*:443" for HTTPS; add a second block if needed for both
-          route:
-            action: ANY
     patch:
       operation: MERGE
       value:
         rate_limits:
-          - actions:
-              - header_value_match:
-                  descriptor_key: "PATH"
-                  descriptor_value: "/model-service/predict"
-                  headers:
-                    - name: ":method"
-                      exact_match: "POST"
-                    - name: ":path"
-                      safe_regex_match:
-                        google_re2: {}
-                        regex: "^/model-service/predict$"
+        - actions:
+          # This action tells Envoy to use the client's IP address for rate limiting
+          - remote_address: {}
