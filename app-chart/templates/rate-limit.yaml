@@ -8,7 +8,7 @@ metadata:
     app: redis
 spec:
   ports:
-  - name: redis
+  - name: tcp-redis
     port: 6379
   selector:
     app: redis
@@ -48,7 +48,7 @@ data:
         rate_limit:
           # Modified for easier testing
           unit: minute
-          requests_per_unit: 5
+          requests_per_unit: 50
 ---
 # ---------- 3. RateLimit Service (in default namespace) ---------------
 apiVersion: v1
