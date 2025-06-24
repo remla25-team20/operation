@@ -157,27 +157,27 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
 
 ## Rate Limiting
 
-To protect the application from abuse and ensure high availability, a rate-limiting mechanism has been implemented at the gateway level. This feature is enabled by default.
+   To protect the application from abuse and ensure high availability, a rate-limiting mechanism has been implemented at the gateway level. This feature is enabled by default.
 
-- **Default Limit**: By default, each client (identified by their IP address) is allowed **200 requests per minute**.
-- **Error Code**: If a client exceeds this limit, they will receive an `HTTP 429 Too Many Requests` error response.
-![alt text](imgs/rate-limit-1.png)
-![alt text](imgs/rate-limit-2.png)
+   - **Default Limit**: By default, each client (identified by their IP address) is allowed **200 requests per minute**.
+   - **Error Code**: If a client exceeds this limit, they will receive an `HTTP 429 Too Many Requests` error response.
+   ![alt text](imgs/rate-limit-1.png)
+   ![alt text](imgs/rate-limit-2.png)
 ### Adjusting for Testing
 
-For development or testing purposes, you may want to use a lower rate limit to verify that the functionality is working correctly. You can adjust this value in the `app-chart/templates/rate-limit.yaml` file.
+   For development or testing purposes, you may want to use a lower rate limit to verify that the functionality is working correctly. You can adjust this value in the `app-chart/templates/rate-limit.yaml` file.
 
-By modifying the `requests_per_unit`
+   By modifying the `requests_per_unit`
 
-```yaml
-# ---------- 2. ConfigMap with Per-IP Rate Limit Rule ------------------
-   ...
-        rate_limit:
-          unit: minute
-          # For testing, you can lower this value (e.g., to 10 or so)
-          requests_per_unit: 200
-   ...
-```
+<pre>
+  <code class="language-yaml" data-source-line="176">
+   rate_limit:
+   unit: minute
+   requests_per_unit: 200
+  </code>
+</pre>
+
+
 
 ## 🧭 Repository Overview
 
