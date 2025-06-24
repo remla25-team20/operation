@@ -228,6 +228,7 @@ Created PR: https://github.com/remla25-team20/operation/pull/63 (A1)
 Created PR: https://github.com/remla25-team20/model-service/pull/15 (A1)
 Created PR: https://github.com/remla25-team20/app/pull/17 (A1)
 Approved PR: https://github.com/remla25-team20/operation/pull/64 (A5)
+Approved PR: https://github.com/remla25-team20/operation/pull/58 (A2)
 
 -- Yiming --
 Created PR:
