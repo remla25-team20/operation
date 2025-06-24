@@ -128,8 +128,8 @@ affinity: {}
 
 modelService:
   name: model-service
-  version: 0.1.101
-  versionCanary: 0.1.101
+  version: 0.1.6
+  versionCanary: 0.1.6
   port: 8080
   volumes:
   userFeedbackData:
