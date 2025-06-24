@@ -65,6 +65,17 @@ Deploying our own application to kubernetes and monitoring
 1. **Prerequisites**
 
    - Have a kubernetes cluster running as in Assignment 2 _or_ have a local minikube cluster running
+   - Insert your PAT in the following and save it to `operation/app-chart/templates/github-pat.yaml`
+
+   ```bash
+   apiVersion: v1
+   kind: Secret
+   metadata:
+      name: github-pat
+   type: Opaque
+   stringData:
+      github-pat: **YOUR_PAT**
+   ```
 
 2. **Install application via Helm chart**
 
