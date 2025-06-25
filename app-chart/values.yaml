@@ -156,3 +156,15 @@ grafana:
 
 rateLimit:
   enabled: true
+
+alertmanager:
+  enabled: true
+  emailTo: "ymchen2001@gmail.com"
+  emailFrom: "ymchen2001@gmail.com"
+  smtpHost: "smtp.gmail.com:587"
+  smtpUser: "ymchen2001@gmail.com"
+  secretName: "alertmanager-email-secret"
+  secretKey: "smtpPassword"
+
+testEmail:
+  enabled: true

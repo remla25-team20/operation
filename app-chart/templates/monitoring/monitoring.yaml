@@ -1,0 +1,80 @@
+# operation/app-chart/templates/model-service-monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: model-service-monitor
+  namespace: monitoring
+  labels:
+    app: model-service
+    release: monitoring  # Match Prometheus CRD label for discovery
+spec:
+  namespaceSelector:
+      any: true # Monitor all namespaces; otherwise this can't see
+  selector:
+    matchLabels:
+      app: model-service  # Match the Service labels in deployment.yml
+  endpoints:
+  - port: http  # Match the Service port name (to be added in deployment.yml)
+    path: /metrics
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: model-service-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring  # must match the label used by your Prometheus deployment
+spec:
+  groups:
+  - name: model-service.rules
+    rules:
+      - alert: TooManySubmits
+      # sum across label dimensions; adjust threshold to suit
+        expr: sum without(app_version, model_service_version) (increase(submit_click_total[30s])) > 5
+        for: 0m                    # fire immediately (no extra wait)
+        labels:
+          severity: warning
+          namespace: monitoring
+        annotations:
+          summary: "Too many submit clicks"
+          description: |
+            More than 5 submit-button clicks in the last 30 seconds.
+      - alert: HighModelErrorRate
+      # calculate the error rate as a ratio of errors to total requests
+        expr: |
+          rate(prediction_error_total[5m])
+          / (rate(prediction_success_total[5m]) + rate(prediction_error_total[5m])) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          namespace: monitoring # must have, 2 hr debugging
+        annotations:
+          summary: "High prediction error rate"
+          description: "Error rate > 10% over the last 5m."
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: app-alerts
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: "enabled"
+spec:
+  route:
+    receiver: email-notifications
+    groupBy: ['alertname']   
+    groupWait: 0s            # send the first message immediately
+    groupInterval: 30s       # reopen the group every 30 s
+    repeatInterval: 30s      # resend while *firing* every 30 s
+  receivers:
+    - name: email-notifications
+      emailConfigs:
+        - smarthost: "mailpit-smtp.monitoring.svc.cluster.local:25"
+          authUsername: ""
+          authPassword:
+            name: alertmanager-email-secret
+            key: smtpPassword
+          requireTLS: false
+          from: "test@localhost"
+          to: "ymchen2001@gmail.com"

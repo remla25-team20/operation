@@ -1,0 +1,23 @@
+# app-chart/templates/monitoring/test-email-alert.yaml
+{{- if .Values.testEmail.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: test-email-alert
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: test.rules
+      rules:
+        - alert: TestEmail
+          expr: vector(1)
+          for: 10s
+          labels:
+            severity: warning
+            namespace: monitoring   # without this name, this is not captured
+          annotations:
+            summary: "Test email alert"
+            description: "This should trigger an email"
+{{- end }}
