@@ -3,4 +3,7 @@
 kubeconfig
 shared/*
 !shared/.keep
+
+app-chart/templates/monitoring/alertmanager-secret.yaml
+
 *github-pat.yaml

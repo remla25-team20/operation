@@ -24,7 +24,15 @@ Run the system locally using Docker Compose.
    ```bash
    echo <YOUR_GH_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
    ```
-3. **Start the system**:
+3. **Define the .env file**
+   - Docker pulls the app and model-service versions defined through environment variables from the .env file.
+   - Since, .env is not part of the repo, you need to manually create it the root directory of the project
+   - Below is an example of a valid .env:
+   
+   APP_VERSION=0.4.1
+   APP_PORT=3000
+   MODEL_SERVICE_VERSION=0.1.6
+4. **Start the system**:
    ```bash
    docker-compose up
    ```
@@ -125,16 +133,46 @@ Deploying our own application to kubernetes and monitoring
    KUBECONFIG=kubeconfig kubectl get svc -n ingress-nginx
    ```
 
-4. **Install Monitoring via Ansible**
+4. **Monitoring and Alerting**
 
-Monitoring (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
+   **Monitoring** (Prometheus Operator + Grafana) is installed automatically via the Ansible finalization step.  
 
-Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
+   Before accessing monitoring dashboards, add these entries to your `/etc/hosts` file (alongside `app.local`):
 
-```bash
-192.168.56.90 grafana.app.local prometheus.app.local
-
+   ```bash
+   192.168.56.90 grafana.app.local
+   192.168.56.90 prometheus.app.local
+   192.168.56.90 mailpit.app.local
    ```
+
+   **Alerting**manager needs a Secret in the monitoring namespace to be able to initialize.
+
+   Create `alertmanager-secret.yaml`
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+      name: alertmanager-email-secret
+      namespace: monitoring
+   type: Opaque
+   stringData:
+      smtpPassword: "<YOUR_SMTP_PASSWORD>" # not really need to be real one, as we use Mailbit
+   ```
+
+   We include a built-in synthetic alert to verify end-to-end email routing via Mailpit. To toggle it, add to your `values.yaml`:
+
+   ```yaml
+   testEmail:
+     enabled: true   # set to false to disable the TestEmail rule
+   ```  
+   ##### Alerting Rules for Excellence
+   We include two production-grade alert rules to monitor `model-service`
+   - **TooManySubmit**: fires if the there is more than 5 submits within the 30s interval.This is easy to trigger and thus (serverity: warning).
+   - **HighModelErrorRate**: fires if the prediction error rate exceeds 10 % over a 5-minute window (severity: critical).
+
+   All alert notifications (including the synthetic TestEmail alert) are routed to Mailpit rather than real email addresses. You can view them in the Mailpit UI at <http://mailpit.app.local>.
+
+
 5. **View & configure monitoring dashboards**
    Once the `monitoring` Helm release is **`STATUS: deployed`** it can take 15-30 s before Prometheus finishes its first scrape of *model-service*.  
    During that time Grafana panels may still read “No data” – just refresh once the target turns **UP** (Prometheus → *Status ▸ Targets*).
@@ -156,6 +194,41 @@ Before accessing monitoring dashboards, add these entries to your `/etc/hosts` f
    | p95 Latency  | `histogram_quantile(0.95, sum by(le, model_service_version)(rate(request_latency_seconds_bucket[5m])))`         | Histogram       |
    | Success /s   | `sum by(model_service_version)(rate(prediction_success_total[1m]))`                                             | Counter         |
    | Error /s     | `sum by(model_service_version)(rate(prediction_error_total[1m]))`                                               | Counter         |
+
+
+## Rate Limiting
+
+   To protect the application from abuse and ensure high availability, a rate-limiting mechanism has been implemented at the gateway level. This feature is enabled by default.
+
+   - **Default Limit**: By default, each client (identified by their IP address) is allowed **200 requests per minute**.
+   - **Error Code**: If a client exceeds this limit, they will receive an `HTTP 429 Too Many Requests` error response.
+   ![alt text](imgs/rate-limit-1.png)
+   ![alt text](imgs/rate-limit-2.png)
+### Adjusting for Testing
+
+   For development or testing purposes, you may want to use a lower rate limit to verify that the functionality is working correctly. You can adjust this value in the `app-chart/templates/rate-limit.yaml` file.
+
+   By modifying the `requests_per_unit`
+
+<pre>
+  <code class="language-yaml" data-source-line="176">
+   rate_limit:
+   unit: minute
+   requests_per_unit: 200
+  </code>
+</pre>
+
+
+
+
+### Quick links
+
+| Component | URL | Default credentials |
+|-----------|-----|---------------------|
+| **Grafana** | <http://grafana.app.local> | `admin / prom-operator` |
+| **Prometheus** | <http://prometheus.app.local> | – |
+| **Mailpit** | <http://mailpit.app.local> | - |
+| **Front-end** | <http://app.local> | – |
 
 ## 🧭 Repository Overview
 
