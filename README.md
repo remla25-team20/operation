@@ -24,7 +24,15 @@ Run the system locally using Docker Compose.
    ```bash
    echo <YOUR_GH_TOKEN> | docker login ghcr.io -u <YOUR_GITHUB_USERNAME> --password-stdin
    ```
-3. **Start the system**:
+3. **Define the .env file**
+   - Docker pulls the app and model-service versions defined through environment variables from the .env file.
+   - Since, .env is not part of the repo, you need to manually create it the root directory of the project
+   - Below is an example of a valid .env:
+   
+   APP_VERSION=0.4.1
+   APP_PORT=3000
+   MODEL_SERVICE_VERSION=0.1.6
+4. **Start the system**:
    ```bash
    docker-compose up
    ```
@@ -162,20 +170,44 @@ Deploying our own application to kubernetes and monitoring
    |-----|--------------|------------------|
    | <http://grafana.app.local> | `admin` | `prom-operator` |
 
-   **Add the dashboard**
-   ```bash
-   # Grafana UI → Dashboards → Import → Upload
-   file: grafana/model-dashboard.json  (in this repo)
+   
+   The dashboard is automatically installed into grafana under the name **Model Dashboard**
+
    ```
    The dashboard shows:
 
-   | Panel        | Metric                                                                                                   | Prometheus type |
-   |--------------|-----------------------------------------------------------------------------------------------------------|-----------------|
-   | CPU Usage    | `model_cpu_percent`                                                                                       | Gauge           |
-   | Memory RSS   | `model_memory_rss_bytes`                                                                                  | Gauge           |
-   | p95 Latency  | `histogram_quantile(0.95, rate(request_latency_seconds_bucket[5m]))`                                      | Histogram       |
-   | Success /s   | `rate(prediction_success_total[1m])`                                                                      | Counter         |
-   | Error /s     | `rate(prediction_error_total[1m])`                                                                        | Counter         |
+   | Panel        | Metric                                                                                                          | Prometheus type |
+   |--------------|-----------------------------------------------------------------------------------------------------------------|-----------------|
+   | CPU Usage    | `sum(model_cpu_percent)`                                                                                        | Gauge           |
+   | Memory RSS   | `sum(model_memory_rss_bytes)`                                                                                   | Gauge           |
+   | p95 Latency  | `histogram_quantile(0.95, sum by(le, model_service_version)(rate(request_latency_seconds_bucket[5m])))`         | Histogram       |
+   | Success /s   | `sum by(model_service_version)(rate(prediction_success_total[1m]))`                                             | Counter         |
+   | Error /s     | `sum by(model_service_version)(rate(prediction_error_total[1m]))`                                               | Counter         |
+
+
+## Rate Limiting
+
+   To protect the application from abuse and ensure high availability, a rate-limiting mechanism has been implemented at the gateway level. This feature is enabled by default.
+
+   - **Default Limit**: By default, each client (identified by their IP address) is allowed **200 requests per minute**.
+   - **Error Code**: If a client exceeds this limit, they will receive an `HTTP 429 Too Many Requests` error response.
+   ![alt text](imgs/rate-limit-1.png)
+   ![alt text](imgs/rate-limit-2.png)
+### Adjusting for Testing
+
+   For development or testing purposes, you may want to use a lower rate limit to verify that the functionality is working correctly. You can adjust this value in the `app-chart/templates/rate-limit.yaml` file.
+
+   By modifying the `requests_per_unit`
+
+<pre>
+  <code class="language-yaml" data-source-line="176">
+   rate_limit:
+   unit: minute
+   requests_per_unit: 200
+  </code>
+</pre>
+
+
 
 
 ### Quick links
@@ -242,7 +274,7 @@ This organization is structured into multiple public repositories:
 | Kubernetes Usage    | **Good**   | Dedicated `app` namespace created via `--create-namespace`; Helm values parametrize image, port, etc. |
 | Helm Installation   | **Good**   | `helm upgrade --install`, separate `monitoring` release, configurable `ServiceMonitor` label.  |
 | App Monitoring      | **Good**   | Five custom metrics: 3 × Counter, 2 × Gauge, 1 × Histogram; exposed via `ServiceMonitor`.      |
-| Grafana Dashboard   | **Sufficient** | Five-panel dashboard imported manually; JSON stored in repo (`grafana/model-dashboard.json`).   |
+| Grafana Dashboard   | **Excellent** | Five-panel dashboard automatically installed as Model Dashboard.   |
 
 - ✅ **Converted app deployment to Helm chart**: Parameterized model service port, service names, and image versions.
 - ✅ **Deployed application via Helm**: Application and model-service deployed using Helm on self-provisioned Kubernetes cluster.
