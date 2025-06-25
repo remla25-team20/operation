@@ -2,17 +2,17 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: model-service-monitor
+  name: "{{ .Release.Name }}-model-service-monitor"
   namespace: monitoring
   labels:
-    app: model-service
+    app: "{{ .Release.Name }}-model-service"
     release: monitoring  # Match Prometheus CRD label for discovery
 spec:
   namespaceSelector:
       any: true # Monitor all namespaces; otherwise this can't see
   selector:
     matchLabels:
-      app: model-service  # Match the Service labels in deployment.yml
+      app: "{{ .Release.Name }}-model-service"  # Match the Service labels in deployment.yml
   endpoints:
   - port: http  # Match the Service port name (to be added in deployment.yml)
     path: /metrics
@@ -21,7 +21,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: model-service-alerts
+  name: "{{ .Release.Name }}-model-service-alerts"
   namespace: monitoring
   labels:
     release: monitoring  # must match the label used by your Prometheus deployment
@@ -56,7 +56,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
-  name: app-alerts
+  name: "{{ .Release.Name }}-app-alerts"
   namespace: monitoring
   labels:
     alertmanagerConfig: "enabled"
