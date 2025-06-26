@@ -222,8 +222,10 @@ Created PR:
 Approved PR:
 
 -- Adrian --
-Created PR:
-Approved PR:
+Created PR: https://github.com/remla25-team20/model-service/pull/16
+Approved PR: https://github.com/remla25-team20/model-service/pull/15
+Approved PR: https://github.com/remla25-team20/app/pull/17
+Approved PR: https://github.com/remla25-team20/operation/pull/63
 
 -- Nathan --
 Created PR: https://github.com/remla25-team20/operation/pull/63 (A1)
