@@ -296,6 +296,10 @@ This organization is structured into multiple public repositories:
 | Pipeline Management with DVC | **Excellent** | DVC pipeline is setup with Google Drive |
 | Code Quality   | **Excellent** | PyLint and Flake8 are configured with a custom rule for detecting hard-coded variables.   |
 
+Please note regarding the Automated Tests: a framework for monitoring the performance of the word encoder over time was implemented (Prometheus data endpoints were configured). However, due to lack of time, no visualization was attempted.
+
+The objective was to send out an alert when $`\frac{word\_count\_encoded}{word\_count\_raw} \leq 0.75`$. This test would have asserted the efficacy of the trained encoder on real-world data. 
+
 ### Assignment 5 - Istio Service Mesh
 
 #### Targeted Rating
