@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: "{{ .Release.Name }}-redis"
   namespace: default
   labels:
     app: redis
@@ -16,7 +16,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: "{{ .Release.Name }}-redis"
   namespace: default
 spec:
   replicas: 1
@@ -38,7 +38,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ratelimit-config
+  name: "{{ .Release.Name }}-ratelimit-config"
   namespace: default
 data:
   config.yml: |
@@ -48,13 +48,13 @@ data:
         rate_limit:
           # Modified for easier testing
           unit: minute
-          requests_per_unit: 50
+          requests_per_unit: 200
 ---
 # ---------- 3. RateLimit Service (in default namespace) ---------------
 apiVersion: v1
 kind: Service
 metadata:
-  name: ratelimit
+  name: "{{ .Release.Name }}-ratelimit"
   namespace: default
   labels:
     app: ratelimit
@@ -69,7 +69,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ratelimit
+  name: "{{ .Release.Name }}-ratelimit"
   namespace: default
 spec:
   replicas: 1
@@ -90,7 +90,7 @@ spec:
           value: debug
         - name: REDIS_URL
           # Using short name because both are in the 'default' namespace
-          value: redis:6379
+          value: "{{ .Release.Name }}-redis:6379"
         - name: RUNTIME_ROOT
           value: /data
         - name: RUNTIME_SUBDIRECTORY
@@ -106,14 +106,14 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: ratelimit-config
+          name: "{{ .Release.Name }}-ratelimit-config"
 ---
 # ---------- 4. The Corrected EnvoyFilter ------------------------------
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
   # This must be in istio-system to target the gateway
-  name: user-rate-limit-filter
+  name: "{{ .Release.Name }}-user-rate-limit-filter"
   namespace: istio-system
 spec:
   workloadSelector:
