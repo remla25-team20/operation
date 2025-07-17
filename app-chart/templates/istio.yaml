@@ -1,19 +1,20 @@
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
-metadata: { name: gateway }
+metadata: { name: "{{ .Release.Name }}-gateway" }
 spec:
   selector: { istio: ingressgateway }
   servers:
     - port: { number: 80, name: http, protocol: HTTP }
-      hosts: [ "*" ]
+      hosts:
+        - "*"
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: entry-service
+  name: "{{ .Release.Name }}-entry-service"
 spec:
   gateways:
-    - gateway
+    - "{{ .Release.Name }}-gateway"
   hosts:
     - "*"
   http:
@@ -23,7 +24,7 @@ spec:
             regex: ".*version={{ .Values.app.version }}.*"
       route:
         - destination:
-            host: app-service
+            host: "{{ .Release.Name }}-service"
             subset: v1
     - match:
       - headers:
@@ -31,24 +32,24 @@ spec:
             regex: ".*version={{ .Values.app.versionCanary }}.*"
       route:
         - destination:
-            host: app-service
+            host: "{{ .Release.Name }}-service"
             subset: v2
     - route:
         - destination:
-            host: app-service
+            host: "{{ .Release.Name }}-service"
             subset: v1
           weight: 90
         - destination:
-            host: app-service
+            host: "{{ .Release.Name }}-service"
             subset: v2
           weight: 10
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: app-service
+  name: "{{ .Release.Name }}-service"
 spec:
-  host: app-service
+  host: "{{ .Release.Name }}-service"
   subsets:
     - name: v1
       labels:
@@ -60,9 +61,9 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
-  name: model-service-dr
+  name: "{{ .Release.Name }}-model-service-dr"
 spec:
-  host: model-service
+  host: "{{ .Release.Name }}-model-service"
   subsets:
     - name: v1
       labels:
@@ -74,7 +75,7 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: model-service-vs
+  name: "{{ .Release.Name }}-model-service-vs"
 spec:
   hosts:
     - model-service
@@ -84,9 +85,9 @@ spec:
             version: "{{ .Values.app.versionCanary }}"
       route:
         - destination:
-            host: model-service
+            host: "{{ .Release.Name }}-model-service"
             subset: v2
     - route:
         - destination:
-            host: model-service
+            host: "{{ .Release.Name }}-model-service"
             subset: v1
